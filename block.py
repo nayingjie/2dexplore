@@ -1,0 +1,5 @@
+__author__ = 'mark'
+BLOCK_AIR = 0
+BLOCK_STONE = 1
+BLOCK_DIRT = 2
+BLOCK_GRASS = 3
