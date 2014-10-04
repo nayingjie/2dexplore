@@ -17,6 +17,7 @@ blocks = [block.BLOCK_STONE, block.BLOCK_DIRT, block.BLOCK_GRASS, block.BLOCK_DI
           block.BLOCK_LAVA, block.BLOCK_WATER]
 start_time = 0
 player_pos = [5, 0]
+god_mode = False
 if os.path.isfile("explore_save.gz"):
     save_file = gzip.open("explore_save.gz", "r")
     try:
@@ -60,6 +61,7 @@ textures = {
     block.BLOCK_WATER: pygame.image.load('textures/water.png')
 }
 pygame.init()
+pygame.display.set_caption("2DExplore")
 font = pygame.font.SysFont("FreeSansBold", 18)  # Fonts should be inited after pygame.init()
 DISPLAY = pygame.display.set_mode((TILESIZE * MAP_X, TILESIZE * MAP_Y + 37))
 
@@ -88,6 +90,8 @@ def new_world():
 
 def tick():
     global player_pos, falling, falldelay
+    if god_mode:
+        falling = False
     lava_spread = 0
     water_spread = 0
     if falling:
@@ -134,8 +138,9 @@ def destroy_block(bx, by):
     if blk in blocks:
         world[bx][by] = block.BLOCK_AIR
         inv[blocks.index(blk)]+=1
-
+clk = pygame.time.Clock()
 while True:
+    clk.tick(20)
     if pygame.time.get_ticks() - start_time >= 100:
         tick()
         start_time = pygame.time.get_ticks()
@@ -145,7 +150,7 @@ while True:
     block_under = world[px][py]
     block_above = world[px][py - 1]
     prev_pos = player_pos[:]  # lists are mutable, so it's a workaround
-    if block_under == block.BLOCK_LAVA:
+    if block_under == block.BLOCK_LAVA and not god_mode:
         gameoverFont = pygame.font.SysFont("FreeSansBold", 38)
         gameoverLabel = gameoverFont.render("GAME OVER :(, Press [SpaceBar]", True, COLORS['red'], COLORS['black'])
         DISPLAY.blit(gameoverLabel, (200, 100))
@@ -168,9 +173,11 @@ while True:
             sys.exit()
         elif event.type == KEYDOWN:
             keys = pygame.key.get_pressed()
-            if event.key == K_w and player_pos[0] in range(1, MAP_X) and not falling:
+            if event.key == K_w and player_pos[0] in range(1, MAP_X) and (not falling or god_mode):
                 player_pos[0] -= 1
-                if not world[player_pos[1]][player_pos[0]] in non_solid and not keys[K_LSHIFT]:
+                if god_mode:
+                    break
+                elif (not world[player_pos[1]][player_pos[0]] in non_solid and not keys[K_LSHIFT]):
                     player_pos = prev_pos
                 if keys[K_LSHIFT]:
                     bx, by = player_pos[1], player_pos[0]
@@ -204,9 +211,10 @@ while True:
                     destroy_block(bx, by)
             elif event.key == K_z:
                 # print "Debug: placing block at %d %d, previous was %d" % (px, py, world[px][py])
-                if inv[current_block] > 0 and block_under == block.BLOCK_AIR:
+                if (inv[current_block] > 0 or god_mode) and block_under == block.BLOCK_AIR:
                     world[px][py] = blocks[current_block]
-                    inv[current_block] -= 1
+                    if not god_mode:
+                        inv[current_block] -= 1
             elif event.key == K_x:
                 if world[px][py] in blocks:
                     block_index = blocks.index(block_under)
@@ -216,6 +224,8 @@ while True:
                 current_block = (current_block + 1) % len(blocks)
             elif event.key == K_ESCAPE:
                 new_world()
+            elif event.key == K_F1:
+                god_mode = not god_mode
     for x in range(MAP_X):
         for y in range(MAP_Y):
             DISPLAY.blit(textures[world[x][y]], (x * TILESIZE, y * TILESIZE))
@@ -225,8 +235,8 @@ while True:
     #    newHeight += 1
     #player_pos[0] = newHeight - 1
     DISPLAY.blit(player_texture, (player_pos[1] * TILESIZE, player_pos[0] * TILESIZE))
-    coordsLabel = font.render("Coords: %d, %d" % (player_pos[0], player_pos[1]), True, COLORS['white'],
-                              COLORS['black'])
+    coordsLabel = font.render("Coords: %d, %d   %d fps" % (player_pos[0], player_pos[1], clk.get_fps())
+                              , True, COLORS['white'], COLORS['black'])
     inventoryLabel = font.render(" x %d" % (inv[current_block]), True, COLORS['white'],
                                  COLORS['black'])
     DISPLAY.blit(coordsLabel, (0, 0))
