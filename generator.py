@@ -1,24 +1,37 @@
 __author__ = 'mark'
-import block, random
+import random
+
+import block
 
 
-def generate_world(xsize=64, ysize=64):
-    world = [[0 for x in range(xsize)] for y in range(ysize)]
-    height_air = range(0, int(xsize / 8) + 4)
-    height_stone = range(int(xsize / 8) + 5, xsize)
-    for x2 in range(xsize):
-        for y2 in range(ysize):
+def generate_world(x_size=64, y_size=64):
+    # noinspection PyUnusedLocal
+    world = [[0 for x in range(x_size)] for y in range(y_size)]
+    height_air = range(0, int(x_size / 8) + 4)
+    height_stone = range(int(x_size / 8) + 5, x_size)
+    for x2 in range(x_size):
+        for y2 in range(y_size):
             if y2 in height_air:
                 world[x2][y2] = block.BLOCK_AIR
             else:
                 if y2 in height_stone:
                     if random.randint(0, 5) == 5:
                         world[x2][y2] = block.BLOCK_DIRT
+                    elif random.randint(0, 150) == 50:
+                        world[x2][y2] = block.BLOCK_DIAMOND
+                    elif random.randint(0, 285) == 285:
+                        world[x2][y2] = block.BLOCK_LAVA
+                    # Looks nasty
+                    # elif random.randint(0, 8) == 8:
+                    #    world[x2][y2] = block.BLOCK_AIR
                     else:
                         world[x2][y2] = block.BLOCK_STONE
                 elif y2 in height_air:
                     world[x2][y2] = block.BLOCK_AIR
                 else:
-                    world[x2][y2] = block.BLOCK_GRASS
+                    if random.randint(0, 5) == 5:
+                        world[x2][y2] = block.BLOCK_WATER
+                    else:
+                        world[x2][y2] = block.BLOCK_GRASS
 
     return world
