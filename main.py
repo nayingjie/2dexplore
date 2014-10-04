@@ -175,9 +175,7 @@ while True:
             keys = pygame.key.get_pressed()
             if event.key == K_w and player_pos[0] in range(1, MAP_X) and (not falling or god_mode):
                 player_pos[0] -= 1
-                if god_mode:
-                    break
-                elif (not world[player_pos[1]][player_pos[0]] in non_solid and not keys[K_LSHIFT]):
+                if not world[player_pos[1]][player_pos[0]] in non_solid and not keys[K_LSHIFT] and not god_mode:
                     player_pos = prev_pos
                 if keys[K_LSHIFT]:
                     bx, by = player_pos[1], player_pos[0]
