@@ -21,9 +21,6 @@ def generate_world(x_size=64, y_size=64):
                         world[x2][y2] = block.BLOCK_DIAMOND
                     elif random.randint(0, 285) == 285:
                         world[x2][y2] = block.BLOCK_LAVA
-                    # Looks nasty
-                    # elif random.randint(0, 8) == 8:
-                    #    world[x2][y2] = block.BLOCK_AIR
                     else:
                         world[x2][y2] = block.BLOCK_STONE
                 elif y2 in height_air:

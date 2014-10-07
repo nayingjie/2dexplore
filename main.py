@@ -57,7 +57,6 @@ pygame.display.set_caption("2DExplore")
 font = pygame.font.SysFont("FreeSansBold", 18)  # Fonts should be inited after pygame.init()
 DISPLAY = pygame.display.set_mode((TILESIZE * MAP_X, TILESIZE * MAP_Y + 37))
 
-
 def save_game():
     print "Saving game..."
     global world
@@ -138,13 +137,14 @@ def tick():
     #print "[DBG] Lava spread level: %d" % lava_spread
     #print "[DBG] Water spread level: %d" % water_spread
 
+
 def destroy_block(blk_x, blk_y, add_inventory=True):
     global world, inv
     blk = world[blk_x][blk_y]
-    if blk in inventory_blocks or not add_inventory:
-        world[blk_x][blk_y] = block.BLOCK_AIR
-        if add_inventory:
-            inv[inventory_blocks.index(blk)] += 1
+    world[blk_x][blk_y] = block.BLOCK_AIR
+    if add_inventory and blk in inventory_blocks:
+        inv[inventory_blocks.index(blk)] += 1
+
 
 
 def explode(exp_x, exp_y, exp_radius, add_inventory=False):
@@ -159,12 +159,28 @@ def explode(exp_x, exp_y, exp_radius, add_inventory=False):
 
 
 def check_pos(pos_x, pos_y):
-    if 0 <= pos_x < MAP_X:
-        if 0 <= pos_y < MAP_Y:
+    if 0 <= pos_x <= MAP_X - 1:
+        if 0 <= pos_y <= MAP_Y - 1:
             #print "[DBG] check_pos(%d, %d) == True" % (pos_x, pos_y)
             return True
     #print "[DBG] check_pos(%d, %d) == False" % (pos_x, pos_y)
     return False
+
+def game_over():
+    gameover_font = pygame.font.SysFont("FreeSansBold", 38)
+    gameover_label = gameover_font.render("GAME OVER :(, Press [SpaceBar]", True, COLORS['red'], COLORS['black'])
+    DISPLAY.blit(gameover_label, (200, 100))
+    pygame.display.update()
+    while True:
+        for evt in pygame.event.get():
+            if evt.type == KEYDOWN:
+                if evt.key == K_SPACE:
+                    new_world()
+                    return
+                elif evt.type == QUIT:
+                    save_game()
+                    pygame.quit()
+                    sys.exit()
 
 clk = pygame.time.Clock()
 while True:
@@ -172,28 +188,11 @@ while True:
     if pygame.time.get_ticks() - start_time >= 50:
         tick()
         start_time = pygame.time.get_ticks()
-    game_over = False
     px = player_pos[1]
     py = player_pos[0]
     block_under = world[px][py]
     block_above = world[px][py - 1]
     prev_pos = player_pos[:]  # lists are mutable, so it's a workaround
-    if block_under == block.BLOCK_LAVA and not god_mode:
-        gameoverFont = pygame.font.SysFont("FreeSansBold", 38)
-        gameoverLabel = gameoverFont.render("GAME OVER :(, Press [SpaceBar]", True, COLORS['red'], COLORS['black'])
-        DISPLAY.blit(gameoverLabel, (200, 100))
-        pygame.display.update()
-        game_over = True
-        while game_over:
-            for evt in pygame.event.get():
-                if evt.type == KEYDOWN:
-                    if evt.key == K_SPACE:
-                        new_world()
-                        game_over = False
-                elif evt.type == QUIT:
-                    save_game()
-                    pygame.quit()
-                    sys.exit()
     for event in pygame.event.get():
         if event.type == QUIT:
             save_game()
@@ -208,9 +207,7 @@ while True:
                 if keys[K_LSHIFT]:
                     bx, by = player_pos[1], player_pos[0]
                     destroy_block(bx, by)
-                else:
-                    jumping = True
-            elif event.key == K_s and player_pos[0] in range(0, MAP_X - 2):
+            elif event.key == K_s and player_pos[0] in range(0, MAP_X - 1):
                 player_pos[0] += 1
                 if not world[player_pos[1]][player_pos[0]] in block.non_solid and not keys[K_LSHIFT]:
                     player_pos = prev_pos
@@ -226,7 +223,7 @@ while True:
                 if keys[K_LSHIFT]:
                     bx, by = player_pos[1], player_pos[0]
                     destroy_block(bx, by)
-            elif event.key == K_d and player_pos[1] in range(0, MAP_Y - 2):
+            elif event.key == K_d and player_pos[1] in range(0, MAP_Y - 1):
                 falling = False
                 falldelay = 0
                 player_pos[1] += 1
@@ -243,9 +240,10 @@ while True:
                         inv[current_block] -= 1
             elif event.key == K_x:
                 if world[px][py] in inventory_blocks:
-                    block_index = inventory_blocks.index(block_under)
-                    inv[block_index] += 1
-                    world[px][py] = block.BLOCK_AIR
+                    if block_under in inventory_blocks:
+                        block_index = inventory_blocks.index(block_under)
+                        inv[block_index] += 1
+                        world[px][py] = block.BLOCK_AIR
             elif event.key == K_1:
                 current_block = (current_block + 1) % len(inventory_blocks)
             elif event.key == K_ESCAPE:
@@ -253,7 +251,9 @@ while True:
             elif event.key == K_F1:
                 god_mode = not god_mode
             elif event.key == K_e:
-                explode(px, py, 2, True)
+                explode(px, py, 5, True)
+    if block_under in block.deadly and not god_mode:
+        game_over()
     for x in range(MAP_X):
         for y in range(MAP_Y):
             DISPLAY.blit(block.textures[world[x][y]], (x * TILESIZE, y * TILESIZE))
@@ -265,9 +265,10 @@ while True:
     DISPLAY.blit(player_texture, (player_pos[1] * TILESIZE, player_pos[0] * TILESIZE))
     debugText = "Coords: %d, %d   %d fps" % (player_pos[0], player_pos[1], clk.get_fps()) + \
                 (" GOD MODE" if god_mode else "")
+    inventoryText = (" x %d" % (inv[current_block])) + " " + \
+        block.BLOCK_NAMES[inventory_blocks[current_block]]
     debugLabel = font.render(debugText, True, COLORS['white'], COLORS['black'])
-    inventoryLabel = font.render(" x %d" % (inv[current_block]), True, COLORS['white'],
-                                 COLORS['black'])
+    inventoryLabel = font.render(inventoryText, True, COLORS['white'], COLORS['black'])
     DISPLAY.blit(debugLabel, (0, 0))
     DISPLAY.fill(0, (0, MAP_X * TILESIZE, MAP_Y * TILESIZE, 37))
     DISPLAY.blit(block.textures[inventory_blocks[current_block]], (0, MAP_Y * TILESIZE + 5))
