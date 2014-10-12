@@ -6,6 +6,7 @@ import os.path
 import gzip
 from pygame.locals import *
 import random
+import datetime
 
 import generator
 import block
@@ -252,6 +253,9 @@ while True:
                 god_mode = not god_mode
             elif event.key == K_e and god_mode:
                 explode(px, py, 5, True)
+            elif event.key == K_F5:
+                pygame.image.save(DISPLAY, "2dexp-%s.png" % str(datetime.datetime.now()))
+                print "Saved screenshot"
     for x in range(MAP_X):
         for y in range(MAP_Y):
             DISPLAY.blit(block.textures[world[x][y]], (x * TILESIZE, y * TILESIZE))
