@@ -9,11 +9,13 @@ import random
 
 import generator
 import block
+import entity
 
 
 TILESIZE = 32
 MAP_X = 20
 MAP_Y = 20
+entities = []
 inventory_blocks = [block.BLOCK_STONE, block.BLOCK_DIRT, block.BLOCK_GRASS, block.BLOCK_DIAMOND,
           block.BLOCK_LAVA, block.BLOCK_WATER]
 start_time = 0
@@ -81,6 +83,8 @@ def new_world():
 
 def tick():
     global player_pos, falling, falldelay
+    for en in entities:
+        en.tick()
     if god_mode:
         falling = False
     if falling:
@@ -146,7 +150,6 @@ def destroy_block(blk_x, blk_y, add_inventory=True):
         inv[inventory_blocks.index(blk)] += 1
 
 
-
 def explode(exp_x, exp_y, exp_radius, add_inventory=False):
     for ex in range(exp_x - exp_radius, exp_x + exp_radius):
         for ey in range(exp_y - exp_radius, exp_y + exp_radius):
@@ -166,6 +169,17 @@ def check_pos(pos_x, pos_y):
     #print "[DBG] check_pos(%d, %d) == False" % (pos_x, pos_y)
     return False
 
+
+def spawn_entity(ent):
+    ent.spawn_hook()
+    entities.append(ent)
+    return entities.index(ent)
+
+
+def remove_entity(ent_id):
+    entities[ent_id].removed_hook()
+    entities.remove(entities[ent_id])
+
 def game_over():
     gameover_font = pygame.font.SysFont("FreeSansBold", 38)
     gameover_label = gameover_font.render("GAME OVER :(, Press [SpaceBar]", True, COLORS['red'], COLORS['black'])
@@ -183,6 +197,7 @@ def game_over():
                 sys.exit()
 
 clk = pygame.time.Clock()
+spawn_entity(entity.PlayerEntity())
 while True:
     clk.tick(20)
     if pygame.time.get_ticks() - start_time >= 50:
@@ -252,8 +267,17 @@ while True:
                 god_mode = not god_mode
             elif event.key == K_e and god_mode:
                 explode(px, py, 5, True)
-    for x in range(MAP_X):
-        for y in range(MAP_Y):
+            elif event.key == K_n and god_mode:
+                if len(entities):
+                    remove_entity(len(entities) - 1) # last
+            elif event.key == K_m and god_mode:
+                spawn_entity(entity.PlayerEntity())
+            elif event.key == K_F5:
+                import datetime
+                pygame.image.save(DISPLAY, "2dexp-%s.png" % str(datetime.datetime.now()))
+                print "Saved screenshot"
+    for x in xrange(MAP_X):
+        for y in xrange(MAP_Y):
             DISPLAY.blit(block.textures[world[x][y]], (x * TILESIZE, y * TILESIZE))
     # gravity
     # newHeight = 0
@@ -273,4 +297,6 @@ while True:
     DISPLAY.blit(inventoryLabel, (32, MAP_Y * TILESIZE + 5))
     if block_under in block.deadly and not god_mode:
         game_over()
+    for ent in entities:
+        ent.render(DISPLAY, TILESIZE, TILESIZE)
     pygame.display.update()
