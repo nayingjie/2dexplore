@@ -28,6 +28,9 @@ if os.path.isfile("explore_save.gz"):
         world = savedata['world']
         inv = savedata['inventory']
         player_pos = savedata['position']
+        ents = savedata['entities']
+        import pickle
+        entities = [pickle.loads(en) for en in ents]
         if len(world) * len(world[0]) != MAP_X * MAP_Y:
             print "We got a world of len %d, but expected %d" % (len(world) * len(world[0]), MAP_X * MAP_Y)
             world = [[0 for x in range(MAP_X)] for y in range(MAP_Y)]
@@ -64,9 +67,12 @@ def save_game():
     global world
     global inv
     global player_pos
+    global entities
+    import pickle
+    ents = [pickle.dumps(enti) for enti in entities ]
     savefile = gzip.open("explore_save.gz", "w")
     try:
-        json.dump({'world': world, 'inventory': inv, 'position': player_pos}, savefile)
+        json.dump({'world': world, 'inventory': inv, 'position': player_pos, 'entities': ents}, savefile)
     except Exception as ex:
         print "Error saving! %s" % str(ex)
     finally:
@@ -74,11 +80,14 @@ def save_game():
 
 
 def new_world():
-    global world, inv, player_pos
+    global world, inv, player_pos, entities
     world = generator.generate_world(MAP_X, MAP_Y)
     # noinspection PyUnusedLocal
     inv = [0 for i in range(0, len(inventory_blocks))]
     player_pos = [5, 0]
+    for en in entities:
+        en.removed_hook()
+    entities = []
 
 
 def tick():
@@ -197,7 +206,6 @@ def game_over():
                 sys.exit()
 
 clk = pygame.time.Clock()
-spawn_entity(entity.PlayerEntity())
 while True:
     clk.tick(20)
     if pygame.time.get_ticks() - start_time >= 50:
@@ -269,9 +277,9 @@ while True:
                 explode(px, py, 5, True)
             elif event.key == K_n and god_mode:
                 if len(entities):
-                    remove_entity(len(entities) - 1) # last
+                    remove_entity(len(entities) - 1)  # last
             elif event.key == K_m and god_mode:
-                spawn_entity(entity.PlayerEntity())
+                spawn_entity(entity.PlayerEntity(bounding_box=(0, 0, MAP_X, MAP_Y)))
             elif event.key == K_F5:
                 import datetime
                 pygame.image.save(DISPLAY, "2dexp-%s.png" % str(datetime.datetime.now()))
@@ -286,7 +294,7 @@ while True:
     #player_pos[0] = newHeight - 1
     DISPLAY.blit(player_texture, (player_pos[1] * TILESIZE, player_pos[0] * TILESIZE))
     debugText = "Coords: %d, %d   %d fps, block: " % (player_pos[0], player_pos[1], clk.get_fps()) + \
-                block.BLOCK_NAMES[block_under] + (" GOD MODE" if god_mode else "")
+                block.BLOCK_NAMES[block_under] + "   "+ ("Entities: %d" % len(entities)) + (" GOD MODE" if god_mode else "")
     inventoryText = (" x %d" % (inv[current_block])) + " " + \
         block.BLOCK_NAMES[inventory_blocks[current_block]]
     debugLabel = font.render(debugText, True, COLORS['white'], COLORS['black'])

@@ -3,10 +3,11 @@ import pygame.image
 
 
 class Entity(object):
-    def __init__(self, texture=None):
+    def __init__(self, texture=None, bounding_box=None):
         self.texture = texture
         self.coords = None
         self.alive = False
+        self.bounding_box = bounding_box
 
     def render(self, surface, tile_x, tile_y):
         pass
@@ -26,19 +27,27 @@ class Entity(object):
         self.coords = [0, 0]
         pass
 
+    def _test_bounding_box(self, x, y):
+        if not self.bounding_box:
+            return True
+        if x in xrange(self.bounding_box[0], self.bounding_box[2]):
+            if y in xrange(self.bounding_box[1], self.bounding_box[3]):
+                return True
+        return False
 
 class GenericEntity(Entity):
-    def __init__(self, texture=None):
-        Entity.__init__(self, texture)
+    def __init__(self, texture=None, bounding_box=None):
+        Entity.__init__(self, texture, bounding_box)
 
 
 class PlayerEntity(GenericEntity):
-    def __init__(self, texture=None):
-        GenericEntity.__init__(self, pygame.image.load('textures/player.png') if not texture else texture)
+    def __init__(self, texture=None, bounding_box=None):
+        GenericEntity.__init__(self, 'textures/player.png' if not texture else texture,
+                               bounding_box)
 
     def render(self, surface, tile_x, tile_y):
         if self.alive:
-            surface.blit(self.texture, (self.coords[1] * tile_x, self.coords[0] * tile_y))
+            surface.blit(pygame.image.load(self.texture), (self.coords[1] * tile_x, self.coords[0] * tile_y))
 
     def removed_hook(self):
         GenericEntity.removed_hook(self)
@@ -47,8 +56,8 @@ class PlayerEntity(GenericEntity):
         GenericEntity.spawn_hook(self)
 
     def tick(self):
-        if self.coords[0] < 12:
-            self.coords[0] += 1
-        else:
-            self.coords[0] = 0
+        import random
+        x, y = random.randint(0, 19), random.randint(0, 19)
+        if self._test_bounding_box(x, y):
+            self.coords[0:2] = [x, y]
 
