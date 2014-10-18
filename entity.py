@@ -35,6 +35,7 @@ class Entity(object):
                 return True
         return False
 
+
 class GenericEntity(Entity):
     def __init__(self, texture=None, bounding_box=None):
         Entity.__init__(self, texture, bounding_box)
