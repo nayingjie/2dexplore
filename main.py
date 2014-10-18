@@ -4,6 +4,7 @@ import sys
 import json
 import os.path
 import gzip
+import cPickle
 from pygame.locals import *
 import random
 
@@ -24,20 +25,19 @@ god_mode = False
 if os.path.isfile("explore_save.gz"):
     save_file = gzip.open("explore_save.gz", "r")
     try:
-        savedata = json.load(save_file)
+        savedata = cPickle.load(save_file)
         world = savedata['world']
         inv = savedata['inventory']
         player_pos = savedata['position']
         ents = savedata['entities']
-        import pickle
-        entities = [pickle.loads(en) for en in ents]
+        entities = [cPickle.loads(en) for en in ents]
         if len(world) * len(world[0]) != MAP_X * MAP_Y:
             print "We got a world of len %d, but expected %d" % (len(world) * len(world[0]), MAP_X * MAP_Y)
             world = [[0 for x in range(MAP_X)] for y in range(MAP_Y)]
-    except Exception as e:
-        print "[DBG] Can't load saved world: %s" % str(e)
-        world = generator.generate_world(MAP_X, MAP_Y)
-        inv = [0 for x in range(0, len(inventory_blocks))]
+    #except Exception as e:
+    #    print "[DBG] Can't load saved world: %s" % str(e)
+    #    world = generator.generate_world(MAP_X, MAP_Y)
+    #    inv = [0 for x in range(0, len(inventory_blocks))]
     finally:
         save_file.close()
 else:
@@ -68,11 +68,13 @@ def save_game():
     global inv
     global player_pos
     global entities
-    import pickle
-    ents = [pickle.dumps(enti) for enti in entities ]
+    print "len of entities %d" % len(entities)
+    ents = [cPickle.dumps(enti) for enti in entities]
+
     savefile = gzip.open("explore_save.gz", "w")
     try:
-        json.dump({'world': world, 'inventory': inv, 'position': player_pos, 'entities': ents}, savefile)
+        cPickle.dump({'world': world, 'inventory': inv, 'position': player_pos, 'entities': ents}, savefile,
+                     cPickle.HIGHEST_PROTOCOL)
     except Exception as ex:
         print "Error saving! %s" % str(ex)
     finally:
@@ -85,8 +87,7 @@ def new_world():
     # noinspection PyUnusedLocal
     inv = [0 for i in range(0, len(inventory_blocks))]
     player_pos = [5, 0]
-    for en in entities:
-        en.removed_hook()
+    # We aren't going to call removed_hook(), because we are creating a new world
     entities = []
 
 
@@ -284,8 +285,8 @@ while True:
                 import datetime
                 pygame.image.save(DISPLAY, "2dexp-%s.png" % str(datetime.datetime.now()))
                 print "Saved screenshot"
-    for x in xrange(MAP_X):
-        for y in xrange(MAP_Y):
+    for x in range(MAP_X):
+        for y in range(MAP_Y):
             DISPLAY.blit(block.textures[world[x][y]], (x * TILESIZE, y * TILESIZE))
     # gravity
     # newHeight = 0
@@ -294,7 +295,7 @@ while True:
     #player_pos[0] = newHeight - 1
     DISPLAY.blit(player_texture, (player_pos[1] * TILESIZE, player_pos[0] * TILESIZE))
     debugText = "Coords: %d, %d   %d fps, block: " % (player_pos[0], player_pos[1], clk.get_fps()) + \
-                block.BLOCK_NAMES[block_under] + "   "+ ("Entities: %d" % len(entities)) + (" GOD MODE" if god_mode else "")
+                block.BLOCK_NAMES[block_under] + (" Entities: %d " % len(entities)) + (" GOD MODE" if god_mode else "")
     inventoryText = (" x %d" % (inv[current_block])) + " " + \
         block.BLOCK_NAMES[inventory_blocks[current_block]]
     debugLabel = font.render(debugText, True, COLORS['white'], COLORS['black'])
