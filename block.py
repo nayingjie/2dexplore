@@ -1,5 +1,6 @@
 __author__ = 'mark'
 import pygame.image
+
 BLOCK_AIR = 0
 BLOCK_STONE = 1
 BLOCK_DIRT = 2
@@ -9,11 +10,11 @@ BLOCK_LAVA = 5
 BLOCK_WATER = 6
 BLOCK_LAVA_FLOWING = 7
 BLOCK_WATER_FLOWING = 8
-#BLOCK_GLASS = 9
-BLOCK_NAMES = {BLOCK_AIR: 'Air', BLOCK_STONE: 'Stone', BLOCK_DIRT: 'Dirt', BLOCK_GRASS: 'Grass',
-               BLOCK_DIAMOND: 'Diamond Ore', BLOCK_LAVA: 'Lava', BLOCK_WATER: 'Water',
-               BLOCK_LAVA_FLOWING: 'Lava F', BLOCK_WATER_FLOWING: 'Water F',  # BLOCK_GLASS: 'glass',
-            }
+BLOCK_NAMES = {
+    BLOCK_AIR: 'Air', BLOCK_STONE: 'Stone', BLOCK_DIRT: 'Dirt', BLOCK_GRASS: 'Grass',
+    BLOCK_DIAMOND: 'Diamond Ore', BLOCK_LAVA: 'Lava', BLOCK_WATER: 'Water',
+    BLOCK_LAVA_FLOWING: 'Lava F', BLOCK_WATER_FLOWING: 'Water F'
+}
 non_solid = [BLOCK_AIR, BLOCK_LAVA, BLOCK_WATER, BLOCK_WATER_FLOWING, BLOCK_LAVA_FLOWING]
 deadly = [BLOCK_LAVA, BLOCK_LAVA_FLOWING]
 textures = {
