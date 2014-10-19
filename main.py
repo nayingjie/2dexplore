@@ -209,7 +209,8 @@ def game_over():
 
 
 def main_loop():
-    global DISPLAY, player_pos, start_time, falling, fall_delay, god_mode, current_block, block_above, block_under
+    global DISPLAY, player_pos, start_time, falling, fall_delay, god_mode, current_block, block_above, block_under,\
+        font, block_index
     start_time = 0
     clk = pygame.time.Clock()
     while True:
