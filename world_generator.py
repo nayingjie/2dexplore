@@ -1,4 +1,5 @@
 __author__ = 'mark'
+# TODO: make a better random with probability
 import random
 
 import block
@@ -28,14 +29,6 @@ def generate_world(x_size=64, y_size=64):
                 else:
                     if random.randint(0, 5) == 5:
                         world[x2][y2] = block.BLOCK_WATER_FLOWING
-
-                    #elif random.randint(0, 2) == 2:
-                    #    world[x2][y2] = block.BLOCK_LAVA_FLOWING
-                    #elif random.randint(0, 50) == 50:
-                    #    world[x2][y2] = block.BLOCK_LAVA
-                    #    if 0 < x2 < x_size - 1:
-                    #        world[x2-1][y2] = block.BLOCK_LAVA
-                    #        world[x2+1][y2] = block.BLOCK_LAVA
                     else:
                         world[x2][y2] = block.BLOCK_GRASS
 
