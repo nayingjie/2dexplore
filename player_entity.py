@@ -6,7 +6,7 @@ __author__ = 'mark'
 
 class PlayerEntity(GenericEntity):
     def __init__(self, texture=None, bounding_box=None):
-        self.falling, self.fall_delay = False, 0
+        self.falling, self.fall_delay, self.god_mode = False, 0, False
         self.inventory = {}
         self.current_block = 0
         GenericEntity.__init__(self, 'textures/player.png' if not texture else texture,

@@ -13,7 +13,6 @@ TILESIZE = 32
 MAP_X = 20
 MAP_Y = 20
 
-god_mode = False
 COLORS = {
     'black': (0, 0, 0),
     'white': (255, 255, 255),
@@ -24,10 +23,29 @@ COLORS = {
 }
 
 
+def load(filename):
+    import cPickle, gzip
+    global game_world
+    try:
+        world_file = gzip.open(filename, "rb")
+        game_world = cPickle.load(world_file)
+    except IOError as err:
+        print "Unable to open the file! \n %s" % err.message
+    except cPickle.UnpicklingError as err:
+        print "Error unpickling! \n %s" % err.message
 
 
-
-
+def save(filename):
+    import cPickle, gzip
+    global game_world
+    try:
+        world_file = gzip.open(filename, "wb")
+        cPickle.dump(game_world, world_file, cPickle.HIGHEST_PROTOCOL)
+    except IOError as err:
+        print "Unable to open the file! \n %s" % err.message
+    except cPickle.PicklingError as err:
+        print "Error pickling! \n %s" % err.message
+        
 def game_over():
     gameover_font = pygame.font.SysFont("FreeSansBold", 38)
     gameover_label = gameover_font.render("GAME OVER :(, Press [SpaceBar]", True, COLORS['red'], COLORS['black'])
@@ -40,13 +58,13 @@ def game_over():
                     game_world.new_world(MAP_X, MAP_Y)
                     return
             elif evt.type == QUIT:
-                game_world.save("explore_save.gz")
+                save("explore_save.gz")
                 pygame.quit()
                 sys.exit()
 
 
 def main_loop():
-    global DISPLAY, start_time, falling, fall_delay, god_mode,\
+    global DISPLAY, start_time, fall_delay, \
         block_above, block_under, block_index, game_world
     font = pygame.font.SysFont("FreeSansBold", 18)  # Fonts should be inited after pygame.init()
     start_time = 0
@@ -63,15 +81,15 @@ def main_loop():
         prev_pos = game_world.entities[0].coords[:]  # lists are mutable
         for event in pygame.event.get():
             if event.type == QUIT:
-                game_world.save("explore_save.gz")
+                save("explore_save.gz")
                 pygame.quit()
                 sys.exit()
             elif event.type == KEYDOWN:
                 keys = pygame.key.get_pressed()
-                if event.key == K_w and game_world.entities[0].coords[0] in range(1, MAP_X) and (not falling or god_mode):
+                if event.key == K_w and game_world.entities[0].coords[0] in range(1, MAP_X) and (not game_world.entities[0].falling or game_world.entities[0].god_mode):
                     game_world.entities[0].coords[0] -= 1
                     if not game_world.level[game_world.entities[0].coords[1]][game_world.entities[0].coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT] and\
-                            not god_mode:
+                            not game_world.entities[0].god_mode:
                         game_world.entities[0].coords = prev_pos
                     if keys[K_LSHIFT]:
                         bx, by = game_world.entities[0].coords[1], game_world.entities[0].coords[0]
@@ -84,7 +102,7 @@ def main_loop():
                         bx, by = game_world.entities[0].coords[1], game_world.entities[0].coords[0]
                         game_world.destroy_block(bx, by)
                 elif event.key == K_a and game_world.entities[0].coords[1] in range(1, MAP_Y):
-                    falling = False
+                    game_world.entities[0].falling = False
                     fall_delay = 0
                     game_world.entities[0].coords[1] -= 1
                     if not game_world.level[game_world.entities[0].coords[1]][game_world.entities[0].coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT]:
@@ -93,7 +111,7 @@ def main_loop():
                         bx, by = game_world.entities[0].coords[1], game_world.entities[0].coords[0]
                         game_world.destroy_block(bx, by)
                 elif event.key == K_d and game_world.entities[0].coords[1] in range(0, MAP_Y - 1):
-                    falling = False
+                    game_world.entities[0].falling = False
                     fall_delay = 0
                     game_world.entities[0].coords[1] += 1
                     if not game_world.level[game_world.entities[0].coords[1]][game_world.entities[0].coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT]:
@@ -103,9 +121,9 @@ def main_loop():
                         game_world.destroy_block(bx, by)
                 elif event.key == K_z:
                     # print "Debug: placing block at %d %d, previous was %d" % (px, py, game_world.level[px][py])
-                    if (game_world.entities[0].inventory[game_world.entities[0].current_block] > 0 or god_mode) and block_under == block.BLOCK_AIR:
+                    if (game_world.entities[0].inventory[game_world.entities[0].current_block] > 0 or game_world.entities[0].god_mode) and block_under == block.BLOCK_AIR:
                         game_world.level[px][py] = block.BLOCK_INVENTORY[game_world.entities[0].current_block]
-                        if not god_mode:
+                        if not game_world.entities[0].god_mode:
                             game_world.entities[0].inventory[game_world.entities[0].current_block] -= 1
                 elif event.key == K_x:
                     if game_world.level[px][py] in block.BLOCK_INVENTORY:
@@ -118,13 +136,13 @@ def main_loop():
                 elif event.key == K_ESCAPE:
                     game_world.new_world(MAP_X, MAP_Y)
                 elif event.key == K_F1:
-                    god_mode = not god_mode
-                elif event.key == K_e and god_mode:
+                    game_world.entities[0].god_mode = not game_world.entities[0].god_mode
+                elif event.key == K_e and game_world.entities[0].god_mode:
                     game_world.explode(px, py, 5, True)
-                elif event.key == K_n and god_mode:
+                elif event.key == K_n and game_world.entities[0].god_mode:
                     if len(game_world.entities) > 1:
                         game_world.remove_entity(len(game_world.entities) - 1)  # last
-                elif event.key == K_m and god_mode:
+                elif event.key == K_m and game_world.entities[0].god_mode:
                     game_world.spawn_entity(PlayerEntity(bounding_box=(0, 0, MAP_X, MAP_Y)))
                 elif event.key == K_F5:
                     import datetime
@@ -141,7 +159,7 @@ def main_loop():
                 #game_world.entities[0].coords[0] = newHeight - 1
         debug_text = "Coords: %d, %d   %d fps, block: " % (game_world.entities[0].coords[0], game_world.entities[0].coords[1], clk.get_fps()) + \
                      block.BLOCK_NAMES[block_under] + (" Entities: %d " % len(game_world.entities)) + \
-                     (" GOD MODE" if god_mode else "")
+                     (" GOD MODE" if game_world.entities[0].god_mode else "")
         inventory_text = (" x %d" % game_world.entities[0].inventory.get(game_world.entities[0].current_block, -1)) + " " + block.BLOCK_NAMES.get(block.BLOCK_INVENTORY[game_world.entities[0].current_block], "unknown")
         debug_label = font.render(debug_text, True, COLORS['white'], COLORS['black'])
         inventory_label = font.render(inventory_text, True, COLORS['white'], COLORS['black'])
@@ -149,7 +167,7 @@ def main_loop():
         DISPLAY.fill(0, (0, MAP_X * TILESIZE, MAP_Y * TILESIZE, 37))
         DISPLAY.blit(block.BLOCK_TEXTURES[block.BLOCK_INVENTORY[game_world.entities[0].current_block]], (0, MAP_Y * TILESIZE + 5))
         DISPLAY.blit(inventory_label, (32, MAP_Y * TILESIZE + 5))
-        if block_under in block.BLOCK_DEADLY and not god_mode:
+        if block_under in block.BLOCK_DEADLY and not game_world.entities[0].god_mode:
             game_over()
         for ent in game_world.entities:
             ent.render(DISPLAY, TILESIZE, TILESIZE)
@@ -162,7 +180,7 @@ pygame.display.set_caption("2DExplore")
 
 game_world = world.World()
 if os.path.isfile("explore_save.gz"):
-    game_world.load("explore_save.gz")
+    load("explore_save.gz")
 else:
     game_world.new_world(MAP_X, MAP_Y)
 

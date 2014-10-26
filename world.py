@@ -7,44 +7,7 @@ class World(object):
     def __init__(self):
         self.level = None
         self.entities = None
-        self.inventory = None
 
-    def save(self, file_name):
-        import cPickle
-        import gzip
-
-        entities_save = [cPickle.dumps(ent) for ent in self.entities]
-        save_file = None
-
-        try:
-            try:
-                save_file = gzip.open(file_name, "wb")
-            except IOError as err:
-                print "Can not open file: \n %s" % err.message
-            cPickle.dump({'world': self.level, 'entities': entities_save}, save_file,
-                         cPickle.HIGHEST_PROTOCOL)
-        except cPickle.PicklingError as err:
-            print "Error pickling: \n %s" % err.message
-        finally:
-            save_file.close()
-
-    def load(self, file_name):
-        import cPickle
-        import gzip
-
-        try:
-            save_file = gzip.open(file_name, "rb")
-            try:
-                data = cPickle.load(save_file)
-                try:
-                    self.level = data['world']
-                    self.entities = [cPickle.loads(pickled_ent) for pickled_ent in data['entities']]
-                except ValueError as err:
-                    print "Error parsing world data: \n %s" % err.message
-            except cPickle.UnpicklingError as err:
-                print "Error unpickling: \n %s" % err.message
-        except IOError as ex:
-            print "Unable to open save file: \n %s" % ex.message
 
     def get_entities(self):
         return self.entities
