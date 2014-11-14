@@ -18,18 +18,23 @@ BLOCK_NAMES = {
     BLOCK_DIAMOND: 'Diamond Ore', BLOCK_LAVA: 'Lava', BLOCK_WATER: 'Water',
     BLOCK_LAVA_FLOWING: 'Lava F', BLOCK_WATER_FLOWING: 'Water F'
 }
+BLOCK_TEXTURES = None
 BLOCK_NONSOLID = [BLOCK_AIR, BLOCK_LAVA, BLOCK_WATER, BLOCK_WATER_FLOWING, BLOCK_LAVA_FLOWING]
 BLOCK_DEADLY = [BLOCK_LAVA, BLOCK_LAVA_FLOWING]
 BLOCK_INVENTORY = [BLOCK_STONE, BLOCK_DIRT, BLOCK_GRASS, BLOCK_DIAMOND,
                    BLOCK_LAVA, BLOCK_WATER]
-BLOCK_TEXTURES = {
-    BLOCK_STONE: pygame.image.load('textures/stone.png'),
-    BLOCK_AIR: pygame.image.load('textures/air.png'),
-    BLOCK_DIRT: pygame.image.load('textures/dirt.png'),
-    BLOCK_GRASS: pygame.image.load('textures/grass.png'),
-    BLOCK_DIAMOND: pygame.image.load('textures/diamond_ore.png'),
-    BLOCK_LAVA: pygame.image.load('textures/lava.png'),
-    BLOCK_WATER: pygame.image.load('textures/water.png'),
-    BLOCK_LAVA_FLOWING: pygame.image.load('textures/lava.png'),
-    BLOCK_WATER_FLOWING: pygame.image.load('textures/water.png'),
-}
+
+
+def load_textures(append_path=""):
+    global BLOCK_TEXTURES
+    BLOCK_TEXTURES = {
+        BLOCK_STONE: pygame.image.load(append_path + 'textures/stone.png'),
+        BLOCK_AIR: pygame.image.load(append_path + 'textures/air.png'),
+        BLOCK_DIRT: pygame.image.load(append_path + 'textures/dirt.png'),
+        BLOCK_GRASS: pygame.image.load(append_path + 'textures/grass.png'),
+        BLOCK_DIAMOND: pygame.image.load(append_path + 'textures/diamond_ore.png'),
+        BLOCK_LAVA: pygame.image.load(append_path + 'textures/lava.png'),
+        BLOCK_WATER: pygame.image.load(append_path + 'textures/water.png'),
+        BLOCK_LAVA_FLOWING: pygame.image.load(append_path + 'textures/lava.png'),
+        BLOCK_WATER_FLOWING: pygame.image.load(append_path + 'textures/water.png'),
+    }

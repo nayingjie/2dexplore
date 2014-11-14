@@ -7,6 +7,7 @@ class World(object):
     def __init__(self):
         self.level = None
         self.entities = None
+        self.player = None
 
 
     def get_entities(self):
@@ -18,25 +19,27 @@ class World(object):
     def new_world(self, x_size, y_size):
         self.level = world_generator.generate_world(x_size, y_size)
         self.entities = [player_entity.PlayerEntity()]
-        self.entities[0].spawn_hook()
-        self.entities[0].inventory = {x: 0 for x in xrange(block.BLOCK_MAX)}
+        self.player = self.entities[0]
+        self.player.spawn_hook()
+        self.player.inventory = {x: 0 for x in xrange(block.BLOCK_MAX)}
 
     def tick(self):
+        
         level_x, level_y = self.get_level_size()
         for en in self.entities:
             en.tick()
-        if self.entities[0].god_mode:
-            self.entities[0].falling = False
-        if self.entities[0].falling:
-            self.entities[0].fall_delay += 1
+        if self.player.god_mode:
+            self.player.falling = False
+        if self.player.falling:
+            self.player.fall_delay += 1
 
-        checky = self.entities[0].coords[0] + 1
-        if checky <= level_y - 1 and self.level[self.entities[0].coords[1]][checky] in block.BLOCK_NONSOLID:
-            self.entities[0].falling = True
-        if self.entities[0].fall_delay == 3:
-            self.entities[0].coords[0] += 1
-            self.entities[0].fall_delay = 0
-            self.entities[0].falling = False
+        checky = self.player.coords[0] + 1
+        if checky <= level_y - 1 and self.level[self.player.coords[1]][checky] in block.BLOCK_NONSOLID:
+            self.player.falling = True
+        if self.player.fall_delay == 3:
+            self.player.coords[0] += 1
+            self.player.fall_delay = 0
+            self.player.falling = False
 
         for x2 in range(level_x):
             for y2 in range(level_y):
@@ -69,7 +72,7 @@ class World(object):
             return
         self.level[blk_x][blk_y] = block.BLOCK_AIR
         if add_inventory:
-            self.entities[0].inventory[block.BLOCK_INVENTORY.index(blk)] += 1
+            self.player.inventory[block.BLOCK_INVENTORY.index(blk)] += 1
 
     def explode(self, exp_x, exp_y, exp_radius, add_inventory=False):
         import random
