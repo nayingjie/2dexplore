@@ -9,7 +9,6 @@ class World(object):
         self.entities = None
         self.player = None
 
-
     def get_entities(self):
         return self.entities
 
@@ -21,7 +20,7 @@ class World(object):
         self.entities = [player_entity.PlayerEntity()]
         self.player = self.entities[0]
         self.player.spawn_hook()
-        self.player.inventory = {x: 0 for x in xrange(block.BLOCK_MAX)}
+        self.player.inventory = {x: 0 for x in xrange(len(block.BLOCK_INVENTORY))}
 
     def tick(self):
         
@@ -68,11 +67,17 @@ class World(object):
 
     def destroy_block(self, blk_x, blk_y, add_inventory=True):
         blk = self.level[blk_x][blk_y]
-        if not blk in block.BLOCK_INVENTORY:
+        if (not blk in (block.BLOCK_INVENTORY + [block.BLOCK_WATER, block.BLOCK_LAVA])) and add_inventory:
             return
+
         self.level[blk_x][blk_y] = block.BLOCK_AIR
         if add_inventory:
-            self.player.inventory[block.BLOCK_INVENTORY.index(blk)] += 1
+            if blk == block.BLOCK_WATER:
+                self.player.inventory[block.BLOCK_INVENTORY.index(block.BLOCK_WATER_FLOWING)] += 1
+            elif blk == block.BLOCK_LAVA:
+                self.player.inventory[block.BLOCK_INVENTORY.index(block.BLOCK_LAVA_FLOWING)] += 1
+            else:
+                self.player.inventory[block.BLOCK_INVENTORY.index(blk)] += 1
 
     def explode(self, exp_x, exp_y, exp_radius, add_inventory=False):
         import random
@@ -81,10 +86,10 @@ class World(object):
             for ey in range(exp_y - exp_radius, exp_y + exp_radius):
                 if self.check_pos(ex, ey):
                     if (ey - exp_radius) > (exp_radius / 2):
-                        if random.randint(0, 8) < 8:
+                        if random.randint(0, 8) == 8:
                             self.destroy_block(ex, ey, add_inventory)
-                else:
-                    self.destroy_block(ex, ey, add_inventory)
+                    else:
+                        self.destroy_block(ex, ey, add_inventory)
 
 
     def check_pos(self, pos_x, pos_y):

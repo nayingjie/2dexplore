@@ -7,7 +7,7 @@ import os
 from pygame.locals import *
 import world
 import block
-block.load_textures()  #...
+block.load_textures()  # ...
 SAVE_FILE = "explore_save.gz"
 TILESIZE = 32
 MAP_X = 20
@@ -138,7 +138,7 @@ def main_loop():
                 elif event.key == K_F1:
                     wrl.player.god_mode = not wrl.player.god_mode
                 elif event.key == K_e and wrl.player.god_mode:
-                    wrl.explode(px, py, 5, True)
+                    wrl.explode(px, py, 5, False)
                 elif event.key == K_n and wrl.player.god_mode:
                     if len(wrl.entities) > 1:
                         wrl.remove_entity(len(wrl.entities) - 1)  # last
