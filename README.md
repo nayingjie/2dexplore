@@ -31,6 +31,7 @@ Debug:
 ------
 
 [F1] - God Mode (infinite inventory, flying)  
+[F5] - Screenshot (saved in working dir)  
 [M] - spawn Entity  
 [N] - despawn Entity  
 
