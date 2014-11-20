@@ -146,7 +146,7 @@ def main_loop():
                     wrl.spawn_entity(PlayerEntity(bounding_box=(0, 0, MAP_X, MAP_Y)))
                 elif event.key == K_F5:
                     import datetime
-                    filename = "2dexp-%s.png" % str(datetime.datetime.now()).replace(" ", "_")
+                    filename = "2dexp-%s.png" % str(datetime.datetime.now()).replace(":", "-")
                     # Dirty fix of bug where pygame says that it can't open png for reading
                     f = open(filename, "w")  # Create the file
                     f.close()
