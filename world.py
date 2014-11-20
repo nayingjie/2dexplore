@@ -46,28 +46,32 @@ class World(object):
                 # If the block is FLOWING, then put STATIONARY around it
                 # Else if it's stationary, then do nothing, leaving it as-is.
                 if self.level[x2][y2] == block.BLOCK_WATER_FLOWING:
+
                     if self.check_pos(x2 + 1, y2):
-                        if self.get_block(x2 - 1, y2) == block.BLOCK_AIR:
+                        if self.get_block(x2 + 1, y2) == block.BLOCK_AIR:
                             self.set_block(x2 + 1, y2, block.BLOCK_WATER)
+
                     if self.check_pos(x2 - 1, y2):
                         if self.get_block(x2 - 1, y2) == block.BLOCK_AIR:
                             self.set_block(x2 - 1, y2, block.BLOCK_WATER)
+
                     if self.check_pos(x2, y2 + 1):
                         if self.get_block(x2, y2 + 1) == block.BLOCK_AIR:
                             self.set_block(x2, y2 + 1, block.BLOCK_WATER_FLOWING)
-                    break
 
                 if self.level[x2][y2] == block.BLOCK_LAVA_FLOWING:
                     if self.check_pos(x2 + 1, y2):
-                        if self.get_block(x2 - 1, y2) == block.BLOCK_AIR:
+                        if self.get_block(x2 + 1, y2) == block.BLOCK_AIR:
                             self.set_block(x2 + 1, y2, block.BLOCK_LAVA)
+
                     if self.check_pos(x2 - 1, y2):
                         if self.get_block(x2 - 1, y2) == block.BLOCK_AIR:
                             self.set_block(x2 - 1, y2, block.BLOCK_LAVA)
+
                     if self.check_pos(x2, y2 + 1):
                         if self.get_block(x2, y2 + 1) == block.BLOCK_AIR:
                             self.set_block(x2, y2 + 1, block.BLOCK_LAVA_FLOWING)
-                    break
+
 
     def destroy_block(self, blk_x, blk_y, add_inventory=True):
         blk = self.level[blk_x][blk_y]
