@@ -42,28 +42,31 @@ class World(object):
 
         for x2 in range(level_x):
             for y2 in range(level_y):
+                # Mechanics:
+                # If the block is FLOWING, then put STATIONARY around it
+                # Else if it's stationary, then do nothing, leaving it as-is.
+                if self.level[x2][y2] == block.BLOCK_WATER_FLOWING:
+                    if self.check_pos(x2 + 1, y2):
+                        if self.get_block(x2 - 1, y2) == block.BLOCK_AIR:
+                            self.set_block(x2 + 1, y2, block.BLOCK_WATER)
+                    if self.check_pos(x2 - 1, y2):
+                        if self.get_block(x2 - 1, y2) == block.BLOCK_AIR:
+                            self.set_block(x2 - 1, y2, block.BLOCK_WATER)
+                    if self.check_pos(x2, y2 + 1):
+                        if self.get_block(x2, y2 + 1) == block.BLOCK_AIR:
+                            self.set_block(x2, y2 + 1, block.BLOCK_WATER_FLOWING)
+
                 if self.level[x2][y2] == block.BLOCK_LAVA_FLOWING:
-                    if 0 < x2 < level_x - 1:
-                        if self.level[x2 - 1][y2] == block.BLOCK_AIR:
-                            self.level[x2 - 1][y2] = block.BLOCK_LAVA
-                            break
-                        elif self.level[x2 + 1][y2] == block.BLOCK_AIR:
-                            self.level[x2 + 1][y2] = block.BLOCK_LAVA
-                            break
-                        elif 0 < y2 < level_y - 1 and self.level[x2][y2 + 1] == block.BLOCK_AIR:
-                            self.level[x2][y2 + 1] = block.BLOCK_LAVA_FLOWING
-                            break
-                elif self.level[x2][y2] == block.BLOCK_WATER_FLOWING:
-                    if 0 < x2 < level_x - 1:
-                        if self.level[x2 - 1][y2] == block.BLOCK_AIR:
-                            self.level[x2 - 1][y2] = block.BLOCK_WATER
-                            break
-                        elif self.level[x2 + 1][y2] == block.BLOCK_AIR:
-                            self.level[x2 + 1][y2] = block.BLOCK_WATER
-                            break
-                        elif 0 < y2 < level_y - 1 and self.level[x2][y2 + 1] == block.BLOCK_AIR:
-                            self.level[x2][y2 + 1] = block.BLOCK_WATER_FLOWING
-                            break
+                    if self.check_pos(x2 + 1, y2):
+                        if self.get_block(x2 - 1, y2) == block.BLOCK_AIR:
+                            self.set_block(x2 + 1, y2, block.BLOCK_LAVA)
+                    if self.check_pos(x2 - 1, y2):
+                        if self.get_block(x2 - 1, y2) == block.BLOCK_AIR:
+                            self.set_block(x2 - 1, y2, block.BLOCK_LAVA)
+                    if self.check_pos(x2, y2 + 1):
+                        if self.get_block(x2, y2 + 1) == block.BLOCK_AIR:
+                            self.set_block(x2, y2 + 1, block.BLOCK_LAVA_FLOWING)
+
 
     def destroy_block(self, blk_x, blk_y, add_inventory=True):
         blk = self.level[blk_x][blk_y]
@@ -116,5 +119,11 @@ class World(object):
         if not self.level:
             raise ValueError("Cannot get size of uninitialized level")
         return len(self.level), len(self.level[0])
+
+    def set_block(self, x, y, blk):
+        self.level[x][y] = blk
+
+    def get_block(self, x, y):
+        return self.level[x][y]
         
 

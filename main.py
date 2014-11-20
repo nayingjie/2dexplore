@@ -146,8 +146,11 @@ def main_loop():
                     wrl.spawn_entity(PlayerEntity(bounding_box=(0, 0, MAP_X, MAP_Y)))
                 elif event.key == K_F5:
                     import datetime
-
-                    pygame.image.save(DISPLAY, "2dexp-%s.png" % str(datetime.datetime.now()))
+                    filename = "2dexp-%s.png" % str(datetime.datetime.now())
+                    # Dirty fix of bug where pygame says that it can't open png for reading
+                    f = open(filename, "wb")  # Create the file
+                    f.close()
+                    pygame.image.save(DISPLAY, filename)
                     print "Saved screenshot"
         for x in range(MAP_X):
             for y in range(MAP_Y):
