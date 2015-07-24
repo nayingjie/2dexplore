@@ -1,4 +1,5 @@
 __author__ = 'mark'
+from PIL import Image
 import pygame.image
 """
     Defines constants for in-game blocks (name, texture, ID, etc)
@@ -29,14 +30,23 @@ BLOCK_INVENTORY = [BLOCK_STONE, BLOCK_DIRT, BLOCK_GRASS, BLOCK_DIAMOND,
 
 def load_textures(append_path=""):
     global BLOCK_TEXTURES
+    stone = Image.open("textures/stone.png")
+    air = Image.open("textures/air.png")
+    dirt = Image.open("textures/dirt.png")
+    grass = Image.open("textures/grass.png")
+    diamond_ore = Image.open("textures/diamond_ore.png")
+    lava = Image.open("textures/lava.png")
+    water = Image.open("textures/water.png")
+    print len(stone.tobytes())
+    print stone
     BLOCK_TEXTURES = {
-        BLOCK_STONE: pygame.image.load(append_path + 'textures/stone.png'),
-        BLOCK_AIR: pygame.image.load(append_path + 'textures/air.png'),
-        BLOCK_DIRT: pygame.image.load(append_path + 'textures/dirt.png'),
-        BLOCK_GRASS: pygame.image.load(append_path + 'textures/grass.png'),
-        BLOCK_DIAMOND: pygame.image.load(append_path + 'textures/diamond_ore.png'),
-        BLOCK_LAVA: pygame.image.load(append_path + 'textures/lava.png'),
-        BLOCK_WATER: pygame.image.load(append_path + 'textures/water.png'),
-        BLOCK_LAVA_FLOWING: pygame.image.load(append_path + 'textures/lava.png'),
-        BLOCK_WATER_FLOWING: pygame.image.load(append_path + 'textures/water.png'),
+        BLOCK_STONE: pygame.image.fromstring(stone.tobytes(),(32,32),"RGBA"),
+        BLOCK_AIR: pygame.image.fromstring(air.tobytes(),(32,32),"RGBA"),
+        BLOCK_DIRT: pygame.image.fromstring(dirt.tobytes(),(32,32),"RGB"),
+        BLOCK_GRASS: pygame.image.fromstring(grass.tobytes(),(32,32),"RGB"),
+        BLOCK_DIAMOND: pygame.image.fromstring(diamond_ore.tobytes(),(32,32),"RGB"),
+        BLOCK_LAVA: pygame.image.fromstring(lava.tobytes(),(32,32),"RGB"),
+        BLOCK_WATER: pygame.image.fromstring(water.tobytes(),(32,32),"RGBA"),
+        BLOCK_LAVA_FLOWING: pygame.image.fromstring(lava.tobytes(),(32,32),"RGB"),
+        BLOCK_WATER_FLOWING: pygame.image.fromstring(water.tobytes(),(32,32),"RGBA"),
     }
