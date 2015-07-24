@@ -10,9 +10,9 @@ import block
 block.load_textures()  # ...
 SAVE_FILE = "explore_save.gz"
 TILESIZE = 32
-MAP_X = 20
-MAP_Y = 20
-
+MAP_X = 52
+MAP_Y = 52
+screen=pygame.display.set_mode((800,800))
 COLORS = {
     'black': (0, 0, 0),
     'white': (255, 255, 255),
@@ -21,8 +21,8 @@ COLORS = {
     'blue': (0, 0, 255),
     'grey': (127, 127, 127)
 }
-
-
+sx = 0
+sy = 0
 def load(filename):
     import cPickle, gzip
     global wrl
@@ -49,7 +49,7 @@ def save(filename):
 def game_over():
     gameover_font = pygame.font.SysFont("FreeSansBold", 38)
     gameover_label = gameover_font.render("GAME OVER, press space bar", True, COLORS['red'], COLORS['black'])
-    DISPLAY.blit(gameover_label, (int(TILESIZE * MAP_X / 4), int(TILESIZE * MAP_Y / 2)))
+    DISPLAY.blit(gameover_label, (800, 800))
     pygame.display.update()
     while True:
         for evt in pygame.event.get():
@@ -64,9 +64,10 @@ def game_over():
 
 
 def main_loop():
-    global DISPLAY, start_time, fall_delay, \
-        block_above, block_under, block_index, wrl
-    font = pygame.font.SysFont("FreeSansBold", 18)  # Fonts should be inited after pygame.init()
+    global DISPLAY, start_time, fall_delay, displae, block_above, block_under, block_index, wrl, xs, ys
+    ys = 0
+    xs = 0
+    font = pygame.font.SysFont("UbuntuMono", 13)  # Fonts should be inited after pygame.init()
     start_time = 0
     clk = pygame.time.Clock()
     while True:
@@ -86,14 +87,27 @@ def main_loop():
                 sys.exit()
             elif event.type == KEYDOWN:
                 keys = pygame.key.get_pressed()
+                if event.key == K_LEFT:
+                    xs += 32
+                if event.key == K_RIGHT:
+                    xs += -32
+                if event.key == K_UP:
+                    ys += 32
+                if event.key == K_DOWN:
+                    ys += -32
+
+
+                #W KEY - UP
                 if event.key == K_w and wrl.player.coords[0] in range(1, MAP_X) and (not wrl.player.falling or wrl.player.god_mode):
                     wrl.player.coords[0] -= 1
+                    playerUp = True
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT] and\
                             not wrl.player.god_mode:
                         wrl.player.coords = prev_pos
                     if keys[K_LSHIFT]:
                         bx, by = wrl.player.coords[1], wrl.player.coords[0]
                         wrl.destroy_block(bx, by)
+                            #S KEY - DOWN
                 elif event.key == K_s and wrl.player.coords[0] in range(0, MAP_X - 1):
                     wrl.player.coords[0] += 1
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT]:
@@ -101,49 +115,64 @@ def main_loop():
                     if keys[K_LSHIFT]:
                         bx, by = wrl.player.coords[1], wrl.player.coords[0]
                         wrl.destroy_block(bx, by)
+                            #A KEY - LEFT
                 elif event.key == K_a and wrl.player.coords[1] in range(1, MAP_Y):
                     wrl.player.falling = False
                     fall_delay = 0
                     wrl.player.coords[1] -= 1
+                    if wrl.player.coords[1] > 0:
+                        xs += 32
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT]:
                         wrl.player.coords = prev_pos
                     if keys[K_LSHIFT]:
                         bx, by = wrl.player.coords[1], wrl.player.coords[0]
                         wrl.destroy_block(bx, by)
+                            #D KEY - RIGHT
                 elif event.key == K_d and wrl.player.coords[1] in range(0, MAP_Y - 1):
                     wrl.player.falling = False
                     fall_delay = 0
                     wrl.player.coords[1] += 1
+                    if wrl.player.coords[1] > 24:
+                        xs = (-32*(wrl.player.coords[1] - 24))
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT]:
                         wrl.player.coords = prev_pos
                     if keys[K_LSHIFT]:
                         bx, by = wrl.player.coords[1], wrl.player.coords[0]
                         wrl.destroy_block(bx, by)
+                            #Z KEY - PLACE BLOCK
                 elif event.key == K_z:
                     # print "Debug: placing block at %d %d, previous was %d" % (px, py, wrl.level[px][py])
                     if (wrl.player.inventory[wrl.player.current_block] > 0 or wrl.player.god_mode) and block_under == block.BLOCK_AIR:
                         wrl.level[px][py] = block.BLOCK_INVENTORY[wrl.player.current_block]
                         if not wrl.player.god_mode:
                             wrl.player.inventory[wrl.player.current_block] -= 1
+                            #X KEY - DESTROY BLOCK STANDING ON
                 elif event.key == K_x:
                     if wrl.level[px][py] in block.BLOCK_INVENTORY:
                         if block_under in block.BLOCK_INVENTORY:
                             block_index = block.BLOCK_INVENTORY.index(block_under)
                             wrl.player.inventory[block_index] += 1
                             wrl.level[px][py] = block.BLOCK_AIR
+                            #1 KEY - SCROLL INVENTORY
                 elif event.key == K_1:
                     wrl.player.current_block = (wrl.player.current_block + 1) % len(block.BLOCK_INVENTORY)
+                            #ESC KEY - RESET
                 elif event.key == K_ESCAPE:
                     wrl.new_world(MAP_X, MAP_Y)
+                            #F1 KEY - GODMODE
                 elif event.key == K_F1:
                     wrl.player.god_mode = not wrl.player.god_mode
+                            #E KEY - EXPLODE
                 elif event.key == K_e and wrl.player.god_mode:
                     wrl.explode(px, py, 5, False)
+                            #N KEY - DESPAWN ENTITY
                 elif event.key == K_n and wrl.player.god_mode:
                     if len(wrl.entities) > 1:
                         wrl.remove_entity(len(wrl.entities) - 1)  # last
+                            #M KEY - SPAWN ENTITY
                 elif event.key == K_m and wrl.player.god_mode:
                     wrl.spawn_entity(PlayerEntity(bounding_box=(0, 0, MAP_X, MAP_Y)))
+                            #F5 KEY - SCREENSHOT (possibly bugged)
                 elif event.key == K_F5:
                     import datetime
                     filename = "2dexp-%s.png" % str(datetime.datetime.now()).replace(":", "-")
@@ -154,31 +183,32 @@ def main_loop():
                     print "Saved screenshot"
         for x in range(MAP_X):
             for y in range(MAP_Y):
-                DISPLAY.blit(block.BLOCK_TEXTURES[wrl.level[x][y]], (x * TILESIZE, y * TILESIZE))
+                displae.blit(block.BLOCK_TEXTURES[wrl.level[x][y]], (x*32, y*32))
                 # gravity
                 # newHeight = 0
                 # while wrl.level[wrl.player.coords[0]][newHeight] == block.BLOCK_AIR:
                 # newHeight += 1
                 #wrl.player.coords[0] = newHeight - 1
-        debug_text = "Coords: %d, %d   %d fps, block: " % (wrl.player.coords[0], wrl.player.coords[1], clk.get_fps()) + \
-                     block.BLOCK_NAMES[block_under] + (" Entities: %d " % len(wrl.entities)) + \
-                     (" GOD MODE" if wrl.player.god_mode else "")
+        debug_text = "Coords: %d, %d   %d fps, block: " % (wrl.player.coords[0], wrl.player.coords[1], clk.get_fps()) + "**%d, %d**" % (xs, ys)
         inventory_text = (" x %d" % wrl.player.inventory.get(wrl.player.current_block, -1)) + " " + block.BLOCK_NAMES.get(block.BLOCK_INVENTORY[wrl.player.current_block], "unknown")
         debug_label = font.render(debug_text, True, COLORS['white'], COLORS['black'])
         inventory_label = font.render(inventory_text, True, COLORS['white'], COLORS['black'])
         DISPLAY.blit(debug_label, (0, 0))
-        DISPLAY.fill(0, (0, MAP_X * TILESIZE, MAP_Y * TILESIZE, 37))
-        DISPLAY.blit(block.BLOCK_TEXTURES[block.BLOCK_INVENTORY[wrl.player.current_block]], (0, MAP_Y * TILESIZE + 5))
+        DISPLAY.blit(block.BLOCK_TEXTURES[block.BLOCK_INVENTORY[wrl.player.current_block]], (0, 25 * TILESIZE + 5))
         DISPLAY.blit(inventory_label, (32, MAP_Y * TILESIZE + 5))
         if block_under in block.BLOCK_DEADLY and not wrl.player.god_mode:
             game_over()
         for ent in wrl.entities:
-            ent.render(DISPLAY, TILESIZE, TILESIZE)
+            ent.render(displae, TILESIZE, TILESIZE)
         pygame.display.update()
-
+        DISPLAY.blit(displae, (xs, ys))
+        DISPLAY.fill(0, (0, 25 * TILESIZE, 25 * TILESIZE, 37))
+        DISPLAY.blit(block.BLOCK_TEXTURES[block.BLOCK_INVENTORY[wrl.player.current_block]], (0, 25 * TILESIZE + 5))
+        DISPLAY.blit(inventory_label, (32, 25 * TILESIZE + 5))
 
 pygame.init()
-DISPLAY = pygame.display.set_mode((TILESIZE * MAP_X, TILESIZE * MAP_Y + 37))
+DISPLAY = pygame.display.set_mode((800, 800))
+displae = pygame.Surface((MAP_X * 32, MAP_Y * 32))
 pygame.display.set_caption("2DExplore")
 
 wrl = world.World()
