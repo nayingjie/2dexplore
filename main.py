@@ -90,11 +90,13 @@ def main_loop():
                     wrl.player.coords[0] -= 1
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT] and\
                             not wrl.player.god_mode:
+                        wrl.level[px][py] = block.BLOCK_AIR
                         wrl.player.coords = prev_pos
                     if keys[K_LSHIFT]:
                         bx, by = wrl.player.coords[1], wrl.player.coords[0]
                         wrl.destroy_block(bx, by)
                 elif event.key == K_s and wrl.player.coords[0] in range(0, MAP_X - 1):
+                    wrl.level[px][py] = block.BLOCK_AIR
                     wrl.player.coords[0] += 1
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT]:
                         wrl.player.coords = prev_pos
@@ -104,6 +106,7 @@ def main_loop():
                 elif event.key == K_a and wrl.player.coords[1] in range(1, MAP_Y):
                     wrl.player.falling = False
                     fall_delay = 0
+                    wrl.level[px][py] = block.BLOCK_AIR
                     wrl.player.coords[1] -= 1
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT]:
                         wrl.player.coords = prev_pos
@@ -113,6 +116,7 @@ def main_loop():
                 elif event.key == K_d and wrl.player.coords[1] in range(0, MAP_Y - 1):
                     wrl.player.falling = False
                     fall_delay = 0
+                    wrl.level[px][py] = block.BLOCK_AIR
                     wrl.player.coords[1] += 1
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT]:
                         wrl.player.coords = prev_pos
