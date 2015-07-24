@@ -37,6 +37,7 @@ def load_textures(append_path=""):
     diamond_ore = Image.open("textures/diamond_ore.png")
     lava = Image.open("textures/lava.png")
     water = Image.open("textures/water.png")
+    
     BLOCK_TEXTURES = {
         BLOCK_STONE: pygame.image.fromstring(stone.tobytes(),(32,32),"RGBA"),
         BLOCK_AIR: pygame.image.fromstring(air.tobytes(),(32,32),"RGBA"),
