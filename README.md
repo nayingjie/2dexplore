@@ -38,4 +38,4 @@ Debug:
 Game is autosaved, the file name is 'explore_save.gz' in working dir.  
 For saving format, see world.py.
 ***
-`2dexplore` is not endorsed or affiliated with [Mojang](https://mojang.com) in any way. All textures used in this program belong to their rightful owners.
+`2dexplore` is not endorsed or affiliated with [Mojang](https://mojang.com) and/or its affiliates in any way. All textures used in this program belong to their rightful owners. Minecraft (an affiliate of Mojang) is ®/TM & © 2009-2013 Mojang / Notch.
