@@ -3,6 +3,8 @@
 
 A pygame 2d exploring game.
 
+<b>NOTE</b> Some of the textures are © Mojang. Used under the EULA.
+
 Installation
 ============
 
