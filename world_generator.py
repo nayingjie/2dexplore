@@ -12,9 +12,7 @@ def generate_world(x_size=64, y_size=64):
     height_stone = xrange(int(x_size / 8) + 5, x_size)
     for x2 in xrange(x_size):
         for y2 in xrange(y_size):
-            if y2 in height_air:
-                world[x2][y2] = block.BLOCK_AIR
-            else:
+            if not y2 in height_air:
                 if y2 in height_stone:
                     if random.randint(0, 5) == 5:
                         world[x2][y2] = block.BLOCK_DIRT
@@ -29,6 +27,21 @@ def generate_world(x_size=64, y_size=64):
                         world[x2][y2] = block.BLOCK_WATER_FLOWING
                     else:
                         world[x2][y2] = block.BLOCK_GRASS
+        if x2 % 6  == 0 and random.randint(0, 1):
+            for trunk_y in xrange(5, height_air[-1] + 1):
+                world[x2][trunk_y] = block.BLOCK_LOG
+
+            world[x2][4] = block.BLOCK_LEAVES
+            world[x2][5] = block.BLOCK_LEAVES
+            world[x2 - 1][5] = block.BLOCK_LEAVES
+            world[x2 + 1][5] = block.BLOCK_LEAVES
+            world[x2 - 1][6] = block.BLOCK_LEAVES
+            world[x2 + 1][6] = block.BLOCK_LEAVES
+            world[x2 - 1][7] = block.BLOCK_LEAVES
+            world[x2 + 1][7] = block.BLOCK_LEAVES
+            world[x2 - 2][7] = block.BLOCK_LEAVES
+            world[x2 + 2][7] = block.BLOCK_LEAVES
+
 
 
     return world
