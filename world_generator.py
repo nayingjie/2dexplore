@@ -24,8 +24,6 @@ def generate_world(x_size=64, y_size=64):
                         world[x2][y2] = block.BLOCK_LAVA_FLOWING
                     else:
                         world[x2][y2] = block.BLOCK_STONE
-                elif y2 in height_air:
-                    world[x2][y2] = block.BLOCK_AIR
                 else:
                     if random.randint(0, 5) == 5:
                         world[x2][y2] = block.BLOCK_WATER_FLOWING
