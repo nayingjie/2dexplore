@@ -48,7 +48,7 @@ def load_textures(append_path=""):
         BLOCK_STONE: pygame.image.fromstring(stone.tobytes(), (32, 32), "RGBA"),
         BLOCK_AIR: pygame.image.fromstring(air.tobytes(), (32, 32), "RGBA"),
         BLOCK_DIRT: pygame.image.fromstring(dirt.tobytes(), (32, 32), "RGBA"),
-        BLOCK_GRASS: pygame.image.fromstring(grass.tobytes(), (32, 32), "RGBA"),
+        BLOCK_GRASS: pygame.image.fromstring(grass.tobytes(), (32, 32), "RGB"),
         BLOCK_DIAMOND: pygame.image.fromstring(diamond_ore.tobytes(), (32, 32), "RGBA"),
         BLOCK_LAVA: pygame.image.fromstring(lava.tobytes(), (32, 32), "RGBA"),
         BLOCK_WATER: pygame.image.fromstring(water.tobytes(), (32, 32), "RGBA"),
