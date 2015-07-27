@@ -1,6 +1,7 @@
 __author__ = 'mark'
 from PIL import Image
 import pygame.image
+
 """
     Defines constants for in-game blocks (name, texture, ID, etc)
 """
@@ -44,15 +45,15 @@ def load_textures(append_path=""):
     leaves = Image.open("textures/leaves.png")
     log = Image.open("textures/log.png")
     BLOCK_TEXTURES = {
-        BLOCK_STONE: pygame.image.fromstring(stone.tobytes(),(32,32),"RGBA"),
-        BLOCK_AIR: pygame.image.fromstring(air.tobytes(),(32,32),"RGBA"),
-        BLOCK_DIRT: pygame.image.fromstring(dirt.tobytes(),(32,32),"RGB"),
-        BLOCK_GRASS: pygame.image.fromstring(grass.tobytes(),(32,32),"RGB"),
-        BLOCK_DIAMOND: pygame.image.fromstring(diamond_ore.tobytes(),(32,32),"RGB"),
-        BLOCK_LAVA: pygame.image.fromstring(lava.tobytes(),(32,32),"RGB"),
-        BLOCK_WATER: pygame.image.fromstring(water.tobytes(),(32,32),"RGBA"),
-        BLOCK_LAVA_FLOWING: pygame.image.fromstring(lava.tobytes(),(32,32),"RGB"),
-        BLOCK_WATER_FLOWING: pygame.image.fromstring(water.tobytes(),(32,32),"RGBA"),
-        BLOCK_LEAVES: pygame.image.fromstring(leaves.tobytes(),(32,32),"RGB"),    
-        BLOCK_LOG: pygame.image.fromstring(log.tobytes(),(32,32),"RGB")
-}
+        BLOCK_STONE: pygame.image.fromstring(stone.tobytes(), (32, 32), "RGBA"),
+        BLOCK_AIR: pygame.image.fromstring(air.tobytes(), (32, 32), "RGBA"),
+        BLOCK_DIRT: pygame.image.fromstring(dirt.tobytes(), (32, 32), "RGB"),
+        BLOCK_GRASS: pygame.image.fromstring(grass.tobytes(), (32, 32), "RGB"),
+        BLOCK_DIAMOND: pygame.image.fromstring(diamond_ore.tobytes(), (32, 32), "RGB"),
+        BLOCK_LAVA: pygame.image.fromstring(lava.tobytes(), (32, 32), "RGB"),
+        BLOCK_WATER: pygame.image.fromstring(water.tobytes(), (32, 32), "RGBA"),
+        BLOCK_LAVA_FLOWING: pygame.image.fromstring(lava.tobytes(), (32, 32), "RGB"),
+        BLOCK_WATER_FLOWING: pygame.image.fromstring(water.tobytes(), (32, 32), "RGBA"),
+        BLOCK_LEAVES: pygame.image.fromstring(leaves.tobytes(), (32, 32), "RGB"),
+        BLOCK_LOG: pygame.image.fromstring(log.tobytes(), (32, 32), "RGB")
+    }
