@@ -13,7 +13,9 @@ def generate_world(x_size=64, y_size=64):
     for x2 in xrange(x_size):
         for y2 in xrange(y_size):
             if not y2 in height_air:
-                if y2 in height_stone:
+                if y2 == y_size - 1:
+                    world[x2][y2] = block.BLOCK_BEDROCK
+                elif y2 in height_stone:
                     if random.randint(0, 5) == 5:
                         world[x2][y2] = block.BLOCK_DIRT
                     elif random.randint(0, 150) == 50:
@@ -22,6 +24,7 @@ def generate_world(x_size=64, y_size=64):
                         world[x2][y2] = block.BLOCK_LAVA_FLOWING
                     else:
                         world[x2][y2] = block.BLOCK_STONE
+
                 else:
                     if random.randint(0, 5) == 5:
                         world[x2][y2] = block.BLOCK_WATER_FLOWING

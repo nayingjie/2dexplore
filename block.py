@@ -16,14 +16,15 @@ BLOCK_LAVA_FLOWING = 7
 BLOCK_WATER_FLOWING = 8
 BLOCK_LEAVES = 9
 BLOCK_LOG = 10
+BLOCK_BEDROCK = 11
 
-BLOCK_COUNT = 11
+BLOCK_COUNT = 12
 
 BLOCK_NAMES = {
     BLOCK_AIR: 'Air', BLOCK_STONE: 'Stone', BLOCK_DIRT: 'Dirt', BLOCK_GRASS: 'Grass',
     BLOCK_DIAMOND: 'Diamond Ore', BLOCK_LAVA: 'Stat Lava', BLOCK_WATER: 'Stat Water',
     BLOCK_LAVA_FLOWING: 'Lava', BLOCK_WATER_FLOWING: 'Water', BLOCK_LEAVES: 'Leaves',
-    BLOCK_LOG: 'Log'
+    BLOCK_LOG: 'Log', BLOCK_BEDROCK: 'Bedrock'
 }
 
 BLOCK_TEXTURES = None
@@ -44,6 +45,7 @@ def load_textures(append_path=""):
     water = Image.open("textures/water.png")
     leaves = Image.open("textures/leaves.png")
     log = Image.open("textures/log.png")
+    bedrock = Image.open("textures/bedrock.png")
     BLOCK_TEXTURES = {
         BLOCK_STONE: pygame.image.fromstring(stone.tobytes(), (32, 32), "RGBA"),
         BLOCK_AIR: pygame.image.fromstring(air.tobytes(), (32, 32), "RGBA"),
@@ -55,5 +57,6 @@ def load_textures(append_path=""):
         BLOCK_LAVA_FLOWING: pygame.image.fromstring(lava.tobytes(), (32, 32), "RGBA"),
         BLOCK_WATER_FLOWING: pygame.image.fromstring(water.tobytes(), (32, 32), "RGBA"),
         BLOCK_LEAVES: pygame.image.fromstring(leaves.tobytes(), (32, 32), "RGBA"),
-        BLOCK_LOG: pygame.image.fromstring(log.tobytes(), (32, 32), "RGBA")
+        BLOCK_LOG: pygame.image.fromstring(log.tobytes(), (32, 32), "RGBA"),
+        BLOCK_BEDROCK: pygame.image.fromstring(bedrock.tobytes(), (32, 32), "RGBA")
     }
