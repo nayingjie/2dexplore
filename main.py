@@ -67,6 +67,8 @@ def game_over():
             for evt in pygame.event.get():
                 if evt.type in [KEYDOWN, QUIT]:
                     stop = True
+                    if evt.type == KEYDOWN:
+                        wrl.new_world(MAP_X, MAP_Y)
 
 
 def main_loop():
@@ -217,11 +219,11 @@ def main_loop():
         for ent in wrl.entities:
             ent.render(map_display, TILESIZE, TILESIZE)
         pygame.display.update()
-        display.fill(Color(0, 0, 0, 0))
+        display.fill(0)
         display.blit(map_display, (xs, ys))
-        display.fill(0, (0, 25 * TILESIZE, 25 * TILESIZE, 37))
-        display.blit(block.BLOCK_TEXTURES[block.BLOCK_INVENTORY[wrl.player.current_block]], (0, 25 * TILESIZE + 5))
-        display.blit(inventory_label, (32, 25 * TILESIZE + 5))
+        display.fill(0x101010, (0, 600 - 48, 800, 600))
+        display.blit(block.BLOCK_TEXTURES[block.BLOCK_INVENTORY[wrl.player.current_block]], (8, 600 - 40))
+        display.blit(inventory_label, (40, 600 - 32))
 
 
 pygame.init()
