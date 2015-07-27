@@ -13,8 +13,8 @@ just_started = True
 block.load_textures()  # ...
 SAVE_FILE = "explore_save.gz"
 TILESIZE = 32
-MAP_X = 52
-MAP_Y = 52
+MAP_X = 48
+MAP_Y = 48
 screen = pygame.display.set_mode((800, 800))
 COLORS = {
     'black': (0, 0, 0),
@@ -225,7 +225,7 @@ def main_loop():
 
 
 pygame.init()
-display = pygame.display.set_mode((800, 800))
+display = pygame.display.set_mode((800, 600))
 map_display = pygame.Surface((MAP_X * 32, MAP_Y * 32))
 pygame.display.set_caption("2DExplore")
 

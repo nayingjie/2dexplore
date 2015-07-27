@@ -6,8 +6,8 @@ import block
 
 
 def generate_world(x_size=64, y_size=64):
-    # noinspection PyUnusedLocal
     world = [[0 for x in xrange(x_size)] for y in xrange(y_size)]
+
     height_air = xrange(0, int(x_size / 8) + 4)
     height_stone = xrange(int(x_size / 8) + 5, x_size)
     for x2 in xrange(x_size):
