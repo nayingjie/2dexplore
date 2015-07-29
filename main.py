@@ -111,13 +111,17 @@ def main_loop():
                 keys = pygame.key.get_pressed()
                 just_started = False
                 if event.key == K_LEFT:
-                    xs += 32
-                if event.key == K_RIGHT:
-                    xs += -32
-                if event.key == K_UP:
-                    ys += 32
-                if event.key == K_DOWN:
-                    ys += -32
+                    if xs <= -32:
+                        xs += 32
+                elif event.key == K_RIGHT:
+                    if xs >= (-736 + 32):
+                        xs += -32
+                elif event.key == K_UP:
+                    if ys <= -32:
+                        ys += 32
+                elif event.key == K_DOWN:
+                    if ys >= (-992 + 32):
+                        ys += -32
 
 
                 # W KEY - UP
