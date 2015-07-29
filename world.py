@@ -1,3 +1,5 @@
+import config
+
 __author__ = 'mark'
 
 import world_generator, block, player_entity
@@ -21,6 +23,8 @@ class World(object):
         self.player = self.entities[0]
         self.player.spawn_hook()
         self.player.inventory = {x: 0 for x in xrange(len(block.BLOCK_INVENTORY))}
+        conf = config.get_config()
+        self.player.name = conf["name"] if "name" in conf else ""
 
     def tick(self):
         

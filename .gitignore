@@ -1,3 +1,5 @@
 # Created by .gitignore support plugin (hsz.mobi)
 # IDE Config
 .idea
+2dexp-*
+config.json

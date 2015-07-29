@@ -1,3 +1,4 @@
+import config
 from player_entity import PlayerEntity
 # TODO: make a better random with probability
 __author__ = 'mark'
@@ -11,6 +12,7 @@ import block
 just_started = True
 
 block.load_textures()  # ...
+
 SAVE_FILE = "explore_save.gz"
 TILESIZE = 32
 MAP_X = 48
@@ -27,6 +29,7 @@ COLORS = {
 sx = 0
 sy = 0
 
+config.load()
 
 def load(filename):
     import cPickle, gzip
@@ -182,12 +185,14 @@ def main_loop():
                 elif event.key == K_e and wrl.player.god_mode:
                     wrl.explode(px, py, 5, False)
                     # N KEY - DESPAWN ENTITY
-                elif event.key == K_n and wrl.player.god_mode:
+                elif event.key == K_n: #and wrl.player.god_mode:
                     if len(wrl.entities) > 1:
                         wrl.remove_entity(len(wrl.entities) - 1)  # last
                         # M KEY - SPAWN ENTITY
-                elif event.key == K_m and wrl.player.god_mode:
-                    wrl.spawn_entity(PlayerEntity(bounding_box=(0, 0, MAP_X, MAP_Y)))
+                elif event.key == K_m: #and wrl.player.god_mode:
+                    ent = PlayerEntity(bounding_box=(0, 0, MAP_X, MAP_Y), name="Testificate")
+                    wrl.spawn_entity(ent)
+                    ent.coords = wrl.player.coords
                     # F5 KEY - SCREENSHOT (possibly bugged)
                 elif event.key == K_F5:
                     import datetime
