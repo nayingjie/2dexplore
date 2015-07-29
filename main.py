@@ -1,3 +1,4 @@
+import datetime
 import config
 from player_entity import PlayerEntity
 # TODO: make a better random with probability
@@ -30,6 +31,15 @@ sx = 0
 sy = 0
 
 config.load()
+
+
+def screenshot():
+
+    filename = "2dexp-%s.png" % str(datetime.datetime.now()).replace(":", "-")
+    f = open(filename, "w")  # Create the file
+    f.close()
+    pygame.image.save(display, filename)
+    print "Saved screenshot"
 
 def load(filename):
     import cPickle, gzip
@@ -194,14 +204,7 @@ def main_loop():
                     ent.coords = wrl.player.coords
                     # F5 KEY - SCREENSHOT (possibly bugged)
                 elif event.key == K_F5:
-                    import datetime
-
-                    filename = "2dexp-%s.png" % str(datetime.datetime.now()).replace(":", "-")
-                    # Dirty fix of bug where pygame says that it can't open png for reading
-                    f = open(filename, "w")  # Create the file
-                    f.close()
-                    pygame.image.save(display, filename)
-                    print "Saved screenshot"
+                    screenshot()
 
         map_display.fill(Color(154, 198, 255, 0))
         for x in range(MAP_X):
