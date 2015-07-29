@@ -43,5 +43,4 @@ class PlayerEntity(GenericEntity):
         return self.inventory
 
     def set_walk(self, walk_dir):
-        print "Walk set %d" % walk_dir
         self.walk_dir = walk_dir
