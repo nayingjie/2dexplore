@@ -18,7 +18,7 @@ class World(object):
         self.entities = entities
 
     def new_world(self, x_size, y_size):
-        self.level = world_generator.generate_world(x_size, y_size)
+        self.level = world_generator.WorldGenerator((x_size, y_size)).generate_world()
         self.entities = [player_entity.PlayerEntity()]
         self.player = self.entities[0]
         self.player.spawn_hook()
