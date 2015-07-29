@@ -152,6 +152,7 @@ def main_loop():
                     if keys[K_LSHIFT]:
                         bx, by = wrl.player.coords[1], wrl.player.coords[0]
                         wrl.destroy_block(bx, by)
+                    wrl.player.set_walk(0)
                         # D KEY - RIGHT
                 elif event.key == K_d and wrl.player.coords[1] in range(0, MAP_Y - 1):
                     wrl.player.falling = False
@@ -165,6 +166,7 @@ def main_loop():
                     if keys[K_LSHIFT]:
                         bx, by = wrl.player.coords[1], wrl.player.coords[0]
                         wrl.destroy_block(bx, by)
+                    wrl.player.set_walk(1)
                         # Z KEY - PLACE BLOCK
                 elif event.key == K_z:
                     # print "Debug: placing block at %d %d, previous was %d" % (px, py, wrl.level[px][py])
