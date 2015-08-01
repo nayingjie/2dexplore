@@ -3,19 +3,29 @@ from entity import GenericEntity
 from PIL import Image
 
 __author__ = 'mark'
-player=Image.open('textures/player.png')
+player = Image.open('textures/player.png')
+player_flipped = Image.open('textures/player2.png')
+
 
 class PlayerEntity(GenericEntity):
-    def __init__(self, texture=None, bounding_box=None):
+    _WALK_TEXTURES = [player_flipped, player]
+    walk_dir = 0
+
+    def __init__(self, texture=None, bounding_box=None, name=None):
         self.falling, self.fall_delay, self.god_mode = False, 0, False
         self.inventory = {}
         self.current_block = 0
         GenericEntity.__init__(self, player.tobytes() if not texture else texture,
-                               bounding_box)
+                               bounding_box, name)
 
     def render(self, surface, tile_x, tile_y):
+        nametag_font = pygame.font.SysFont("UbuntuMono", 13)
         if self.alive:
-            surface.blit(pygame.image.fromstring(self.texture, (32,32), "RGBA"), (self.coords[1] * tile_x, self.coords[0] * tile_y))
+            if self.name:
+                nametag = nametag_font.render(self.name, True, (255, 255, 255), (63, 63, 63))
+                surface.blit(nametag, ((self.coords[1] * tile_x) - 32, (self.coords[0] * tile_y) - 16))
+            surface.blit(pygame.image.fromstring(self._WALK_TEXTURES[self.walk_dir].tobytes(), (32, 32), "RGBA"),
+                         (self.coords[1] * tile_x, self.coords[0] * tile_y))
 
     def removed_hook(self):
         GenericEntity.removed_hook(self)
@@ -31,3 +41,6 @@ class PlayerEntity(GenericEntity):
 
     def get_inventory(self):
         return self.inventory
+
+    def set_walk(self, walk_dir):
+        self.walk_dir = walk_dir

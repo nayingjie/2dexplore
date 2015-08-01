@@ -6,7 +6,7 @@ __author__ = 'mark'
 
 
 class Entity(object):
-    def __init__(self, texture=None, bounding_box=None):
+    def __init__(self, texture=None, bounding_box=None, name=None):
         pass
 
     def render(self, surface, tile_x, tile_y):
@@ -33,12 +33,13 @@ class Entity(object):
 
 
 class GenericEntity(Entity):
-    def __init__(self, texture=None, bounding_box=None):
+    def __init__(self, texture=None, bounding_box=None, name=None):
         self.texture = texture
         self.coords = None
         self.alive = False
         self.bounding_box = bounding_box
-        Entity.__init__(self, texture, bounding_box)
+        self.name = name
+        Entity.__init__(self, texture, bounding_box, name)
 
     def removed_hook(self):
         self.alive = False

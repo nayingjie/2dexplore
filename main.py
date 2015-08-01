@@ -1,3 +1,5 @@
+import datetime
+import config
 from player_entity import PlayerEntity
 # TODO: make a better random with probability
 __author__ = 'mark'
@@ -11,6 +13,7 @@ import block
 just_started = True
 
 block.load_textures()  # ...
+
 SAVE_FILE = "explore_save.gz"
 TILESIZE = 32
 MAP_X = 48
@@ -27,6 +30,16 @@ COLORS = {
 sx = 0
 sy = 0
 
+config.load()
+
+
+def screenshot():
+
+    filename = "2dexp-%s.png" % str(datetime.datetime.now()).replace(":", "-")
+    f = open(filename, "w")  # Create the file
+    f.close()
+    pygame.image.save(display, filename)
+    print "Saved screenshot"
 
 def load(filename):
     import cPickle, gzip
@@ -98,19 +111,25 @@ def main_loop():
                 keys = pygame.key.get_pressed()
                 just_started = False
                 if event.key == K_LEFT:
-                    xs += 32
-                if event.key == K_RIGHT:
-                    xs += -32
-                if event.key == K_UP:
-                    ys += 32
-                if event.key == K_DOWN:
-                    ys += -32
+                    if xs <= -32:
+                        xs += 32
+                elif event.key == K_RIGHT:
+                    if xs >= (-736 + 32):
+                        xs += -32
+                elif event.key == K_UP:
+                    if ys <= -32:
+                        ys += 32
+                elif event.key == K_DOWN:
+                    if ys >= (-992 + 32):
+                        ys += -32
 
 
                 # W KEY - UP
                 if event.key == K_w and wrl.player.coords[0] in range(1, MAP_X) and (
                             not wrl.player.falling or wrl.player.god_mode):
                     wrl.player.coords[0] -= 1
+                    if wrl.player.coords[0] > 0 and ys <= -32:
+                        ys += 32
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[
                         K_LSHIFT] and \
                             not wrl.player.god_mode:
@@ -121,6 +140,8 @@ def main_loop():
                         # S KEY - DOWN
                 elif event.key == K_s and wrl.player.coords[0] in range(0, MAP_X - 1):
                     wrl.player.coords[0] += 1
+                    if wrl.player.coords[0] > 16:
+                        ys = (-32 * (wrl.player.coords[0] - 16))
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT]:
                         wrl.player.coords = prev_pos
                     if keys[K_LSHIFT]:
@@ -131,7 +152,7 @@ def main_loop():
                     wrl.player.falling = False
                     fall_delay = 0
                     wrl.player.coords[1] -= 1
-                    if wrl.player.coords[1] > 0:
+                    if wrl.player.coords[1] > 0 and ((xs + 32) <= 0):
                         xs += 32
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[
                         K_LSHIFT]:
@@ -139,6 +160,7 @@ def main_loop():
                     if keys[K_LSHIFT]:
                         bx, by = wrl.player.coords[1], wrl.player.coords[0]
                         wrl.destroy_block(bx, by)
+                    wrl.player.set_walk(0)
                         # D KEY - RIGHT
                 elif event.key == K_d and wrl.player.coords[1] in range(0, MAP_Y - 1):
                     wrl.player.falling = False
@@ -152,6 +174,7 @@ def main_loop():
                     if keys[K_LSHIFT]:
                         bx, by = wrl.player.coords[1], wrl.player.coords[0]
                         wrl.destroy_block(bx, by)
+                    wrl.player.set_walk(1)
                         # Z KEY - PLACE BLOCK
                 elif event.key == K_z:
                     # print "Debug: placing block at %d %d, previous was %d" % (px, py, wrl.level[px][py])
@@ -181,22 +204,17 @@ def main_loop():
                 elif event.key == K_e and wrl.player.god_mode:
                     wrl.explode(px, py, 5, False)
                     # N KEY - DESPAWN ENTITY
-                elif event.key == K_n and wrl.player.god_mode:
+                elif event.key == K_n: #and wrl.player.god_mode:
                     if len(wrl.entities) > 1:
                         wrl.remove_entity(len(wrl.entities) - 1)  # last
                         # M KEY - SPAWN ENTITY
-                elif event.key == K_m and wrl.player.god_mode:
-                    wrl.spawn_entity(PlayerEntity(bounding_box=(0, 0, MAP_X, MAP_Y)))
+                elif event.key == K_m: #and wrl.player.god_mode:
+                    ent = PlayerEntity(bounding_box=(0, 0, MAP_X, MAP_Y), name="Testificate")
+                    wrl.spawn_entity(ent)
+                    ent.coords = wrl.player.coords
                     # F5 KEY - SCREENSHOT (possibly bugged)
                 elif event.key == K_F5:
-                    import datetime
-
-                    filename = "2dexp-%s.png" % str(datetime.datetime.now()).replace(":", "-")
-                    # Dirty fix of bug where pygame says that it can't open png for reading
-                    f = open(filename, "w")  # Create the file
-                    f.close()
-                    pygame.image.save(display, filename)
-                    print "Saved screenshot"
+                    screenshot()
 
         map_display.fill(Color(154, 198, 255, 0))
         for x in range(MAP_X):
