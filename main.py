@@ -128,7 +128,7 @@ def main_loop():
                 if event.key == K_w and wrl.player.coords[0] in range(1, MAP_X) and (
                             not wrl.player.falling or wrl.player.god_mode):
                     wrl.player.coords[0] -= 1
-                    if wrl.player.coords[0] > 0:
+                    if wrl.player.coords[0] > 0 and ys <= -32:
                         ys += 32
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[
                         K_LSHIFT] and \
@@ -141,7 +141,7 @@ def main_loop():
                 elif event.key == K_s and wrl.player.coords[0] in range(0, MAP_X - 1):
                     wrl.player.coords[0] += 1
                     if wrl.player.coords[0] > 16:
-                        ys = (-16 * (wrl.player.coords[0] - 16))
+                        ys = (-32 * (wrl.player.coords[0] - 16))
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT]:
                         wrl.player.coords = prev_pos
                     if keys[K_LSHIFT]:
@@ -152,7 +152,7 @@ def main_loop():
                     wrl.player.falling = False
                     fall_delay = 0
                     wrl.player.coords[1] -= 1
-                    if wrl.player.coords[1] > 0:
+                    if wrl.player.coords[1] > 0 and ((xs + 32) <= 0):
                         xs += 32
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[
                         K_LSHIFT]:
