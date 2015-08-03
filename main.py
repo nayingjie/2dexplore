@@ -92,7 +92,29 @@ def main_loop():
     font = pygame.font.SysFont("UbuntuMono", 13)  # Fonts should be inited after pygame.init()
     start_time = 0
     clk = pygame.time.Clock()
+    if wrl.player.coords[1] < 12:
+        xboundmax=(wrl.player.coords[1] + 12)
+    else:
+        xboundmax=((wrl.player.coords[1]-(wrl.player.coords[1]*2))+12)
+    xboundmin=0
+    if wrl.player.coords[1] < 8:
+        yboundmax=(wrl.player.coords[0])
+    else:
+        yboundmax=((wrl.player.coords[0]-(wrl.player.coords[0]*2))+8)
+    yboundmin=0
     while True:
+        has_displayed=0
+        if wrl.player.coords[1] < 12:
+            xboundmax=(wrl.player.coords[1] + 12)
+        else:
+            xboundmax=((wrl.player.coords[1]-(wrl.player.coords[1]*2))+12)
+        xboundmin=0
+        if wrl.player.coords[0] < 8:
+             yboundmax=(wrl.player.coords[0] + 8)
+        else:
+            yboundmax=((wrl.player.coords[0]-(wrl.player.coords[0]*2))+8)
+        yboundmin=0
+
         clk.tick(20)
         if pygame.time.get_ticks() - start_time >= 50:
             wrl.tick()
@@ -110,26 +132,13 @@ def main_loop():
             elif event.type == KEYDOWN:
                 keys = pygame.key.get_pressed()
                 just_started = False
-                if event.key == K_LEFT:
-                    if xs <= -32:
-                        xs += 32
-                elif event.key == K_RIGHT:
-                    if xs >= (-736 + 32):
-                        xs += -32
-                elif event.key == K_UP:
-                    if ys <= -32:
-                        ys += 32
-                elif event.key == K_DOWN:
-                    if ys >= (-992 + 32):
-                        ys += -32
-
-
                 # W KEY - UP
                 if event.key == K_w and wrl.player.coords[0] in range(1, MAP_X) and (
                             not wrl.player.falling or wrl.player.god_mode):
                     wrl.player.coords[0] -= 1
-                    if wrl.player.coords[0] > 0 and ys <= -32:
-                        ys += 32
+                    yboundmax += 1
+                    if yboundmin != 0:
+                        yboundmin += 1
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[
                         K_LSHIFT] and \
                             not wrl.player.god_mode:
@@ -140,8 +149,9 @@ def main_loop():
                         # S KEY - DOWN
                 elif event.key == K_s and wrl.player.coords[0] in range(0, MAP_X - 1):
                     wrl.player.coords[0] += 1
-                    if wrl.player.coords[0] > 16:
-                        ys = (-32 * (wrl.player.coords[0] - 16))
+                    yboundmax -= 1
+                    if yboundmin != 0:
+                        yboundmin -= 1
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[K_LSHIFT]:
                         wrl.player.coords = prev_pos
                     if keys[K_LSHIFT]:
@@ -152,8 +162,10 @@ def main_loop():
                     wrl.player.falling = False
                     fall_delay = 0
                     wrl.player.coords[1] -= 1
-                    if wrl.player.coords[1] > 0 and ((xs + 32) <= 0):
-                        xs += 32
+                    xboundmax += 1
+                    if xboundmin != 0:
+                        xboundmin += 1
+
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[
                         K_LSHIFT]:
                         wrl.player.coords = prev_pos
@@ -166,8 +178,9 @@ def main_loop():
                     wrl.player.falling = False
                     fall_delay = 0
                     wrl.player.coords[1] += 1
-                    if wrl.player.coords[1] > 24:
-                        xs = (-32 * (wrl.player.coords[1] - 24))
+                    xboundmax -= 1
+                    if xboundmax <= -24: 
+                        xboundmin -= 1
                     if not wrl.level[wrl.player.coords[1]][wrl.player.coords[0]] in block.BLOCK_NONSOLID and not keys[
                         K_LSHIFT]:
                         wrl.player.coords = prev_pos
@@ -195,9 +208,9 @@ def main_loop():
                     wrl.player.current_block = (wrl.player.current_block + 1) % len(block.BLOCK_INVENTORY)
                     # ESC KEY - RESET
                 elif event.key == K_ESCAPE:
-                    xs, ys = 0, 0
+                    xboundmax, xboundmin, yboundmax, yboundmin = 0, 0, -10, 0
                     wrl.new_world(MAP_X, MAP_Y)
-                    # F1 KEY - GODMODE
+                      # F1 KEY - GODMODE
                 elif event.key == K_F1:
                     wrl.player.god_mode = not wrl.player.god_mode
                     # E KEY - EXPLODE
@@ -222,7 +235,7 @@ def main_loop():
                 map_display.blit(block.BLOCK_TEXTURES[wrl.level[x][y]], (x * 32, y * 32))
 
         debug_text = "Coords: %d, %d   %d fps, block: " % (
-            wrl.player.coords[0], wrl.player.coords[1], clk.get_fps()) + "**%d, %d**" % (xs, ys)
+            wrl.player.coords[0], wrl.player.coords[1], clk.get_fps()) + "**%d, %d**" % (xboundmax, yboundmax)
         inventory_text = (" x %d" % wrl.player.inventory.get(wrl.player.current_block,
                                                              -1)) + " " + block.BLOCK_NAMES.get(
              block.BLOCK_INVENTORY[wrl.player.current_block], "unknown")
@@ -237,7 +250,15 @@ def main_loop():
             ent.render(map_display, TILESIZE, TILESIZE)
         pygame.display.update()
         display.fill(0)
-        display.blit(map_display, (xs, ys))
+        if xboundmax <= 0 and xboundmax <= -12:
+            fx=(xboundmax*32)
+            has_displayed=1 
+            if xboundmax < -23: fx = -736
+        else: fx = 0
+        if yboundmax <= 0 and yboundmax <= -8:
+            fy=(yboundmax*32)
+        else: fy = 0
+        display.blit(map_display, (fx, fy))
         display.fill(0x101010, (0, 600 - 48, 800, 600))
         display.blit(block.BLOCK_TEXTURES[block.BLOCK_INVENTORY[wrl.player.current_block]], (8, 600 - 40))
         display.blit(inventory_label, (40, 600 - 32))
