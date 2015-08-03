@@ -13,7 +13,7 @@ import block
 just_started = True
 
 block.load_textures()  # ...
-
+player_health=20.0
 SAVE_FILE = "explore_save.gz"
 TILESIZE = 32
 MAP_X = 48
@@ -31,7 +31,6 @@ sx = 0
 sy = 0
 
 config.load()
-
 
 def screenshot():
 
@@ -102,6 +101,7 @@ def main_loop():
     else:
         yboundmax=((wrl.player.coords[0]-(wrl.player.coords[0]*2))+8)
     yboundmin=0
+    player_health=20
     while True:
         has_displayed=0
         if wrl.player.coords[1] < 12:
@@ -235,7 +235,7 @@ def main_loop():
                 map_display.blit(block.BLOCK_TEXTURES[wrl.level[x][y]], (x * 32, y * 32))
 
         debug_text = "Coords: %d, %d   %d fps, block: " % (
-            wrl.player.coords[0], wrl.player.coords[1], clk.get_fps()) + "**%d, %d**" % (xboundmax, yboundmax)
+                wrl.player.coords[0], wrl.player.coords[1], clk.get_fps()) + "**%d, %d**" % (xboundmax, yboundmax) + " player_health: %d " % (player_health)
         inventory_text = (" x %d" % wrl.player.inventory.get(wrl.player.current_block,
                                                              -1)) + " " + block.BLOCK_NAMES.get(
              block.BLOCK_INVENTORY[wrl.player.current_block], "unknown")
@@ -245,7 +245,11 @@ def main_loop():
         display.blit(block.BLOCK_TEXTURES[block.BLOCK_INVENTORY[wrl.player.current_block]], (0, 25 * TILESIZE + 5))
         display.blit(inventory_label, (32, MAP_Y * TILESIZE + 5))
         if block_under in block.BLOCK_DEADLY and not wrl.player.god_mode:
-            game_over()
+            player_health -= 0.20
+            if player_health <= 0:
+                game_over()
+        if player_health <= 20.0:
+            player_health=player_health+0.05
         for ent in wrl.entities:
             ent.render(map_display, TILESIZE, TILESIZE)
         pygame.display.update()
