@@ -17,7 +17,8 @@ class WorldGenerator(object):
         world = [[0 for x in xrange(x_size)] for y in xrange(y_size)]
 
         height_air = xrange(0, int(x_size / 8) + 4)
-        height_stone = xrange(int(x_size / 8) + 5, x_size)
+        height_stone = xrange(11, 18)
+        height_ore = xrange(18, x_size)
         for x2 in xrange(x_size):
             for y2 in xrange(y_size):
                 if not y2 in height_air:
@@ -26,12 +27,23 @@ class WorldGenerator(object):
                     elif y2 in height_stone:
                         if random.randint(0, 5) == 5:
                          world[x2][y2] = block.BLOCK_DIRT
-                        elif random.randint(0, 150) == 50:
+                        else:
+                         world[x2][y2] = block.BLOCK_STONE
+                    elif y2 in height_ore:
+                        if random.randint(0, 150) == 50:
                             world[x2][y2] = block.BLOCK_DIAMOND
+                        elif random.randint(0, 150) == 32:
+                            world[x2][y2] = block.BLOCK_IRON
+                        elif random.randint(0, 150) == 76:
+                            world[x2][y2] = block.BLOCK_GOLD
+                        elif random.randint(0, 150) in [25, 31]:
+                            world[x2][y2] = block.BLOCK_COAL
                         elif random.randint(0, 285) == 285:
                             world[x2][y2] = block.BLOCK_LAVA_FLOWING
-                        else:
+                        elif random.randint(0, 100) in range(85):
                             world[x2][y2] = block.BLOCK_STONE
+                        else:
+                            world[x2][y2] = block.BLOCK_DIRT
 
                     else:
                         if random.randint(0, 5) == 5:
