@@ -4,3 +4,5 @@
 2dexp-*
 config.json
 explore_save.gz
+*.pyc
+*.swp
